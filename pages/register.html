@@ -1965,8 +1965,31 @@
       .catch(() => { alert('서버 연결에 실패했습니다.'); btn.disabled=false; btn.textContent='⚡ 용병 라이더로 가입하기'; });
       */
 
-      // MVP: 백엔드 없이 완료 화면 이동
-      showDone('rider', name);
+      // 백엔드 연동: 가입 정보를 서버로 전송
+      const rBtn = document.getElementById('rider-submit-btn');
+      rBtn.disabled = true; rBtn.textContent = '처리 중...';
+      fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userType: 'rider',
+          name: name,
+          email: email,
+          password: pw,
+          phone: phone,
+          regions: getSelectedRegions(),
+          extra: JSON.stringify({
+            experience: exp.value,
+            marketing: document.getElementById('rider-agree3').checked
+          })
+        })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        if (res.ok) { showDone('rider', name); }
+        else { alert(res.error || '가입 중 오류가 발생했습니다.'); rBtn.disabled=false; rBtn.textContent='⚡ 용병 라이더로 가입하기'; }
+      })
+      .catch(function(){ alert('서버에 연결할 수 없습니다. 백엔드 서버가 켜져 있는지 확인하세요.'); rBtn.disabled=false; rBtn.textContent='⚡ 용병 라이더로 가입하기'; });
     });
 
     /* ============================================================
@@ -2023,8 +2046,32 @@
       .catch(() => { alert('서버 연결에 실패했습니다.'); btn.disabled=false; btn.textContent='🏢 지사로 가입하기'; });
       */
 
-      // MVP: 백엔드 없이 완료 화면 이동
-      showDone('agency', agencyName);
+      // 백엔드 연동: 가입 정보를 서버로 전송
+      const aBtn = document.getElementById('agency-submit-btn');
+      aBtn.disabled = true; aBtn.textContent = '처리 중...';
+      fetch('http://localhost:5000/api/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userType: 'agency',
+          name: agencyName,
+          email: email,
+          password: pw,
+          phone: phone,
+          regions: agencyHidden.value,
+          extra: JSON.stringify({
+            business_number: biz,
+            manager: manager,
+            marketing: document.getElementById('agency-agree3').checked
+          })
+        })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(res){
+        if (res.ok) { showDone('agency', agencyName); }
+        else { alert(res.error || '가입 중 오류가 발생했습니다.'); aBtn.disabled=false; aBtn.textContent='🏢 지사로 가입하기'; }
+      })
+      .catch(function(){ alert('서버에 연결할 수 없습니다. 백엔드 서버가 켜져 있는지 확인하세요.'); aBtn.disabled=false; aBtn.textContent='🏢 지사로 가입하기'; });
     });
 
     /* ============================================================
