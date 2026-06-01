@@ -51,6 +51,8 @@ def register():
 
     phone = data.get("phone", "")
     regions = data.get("regions", "")
+    if isinstance(regions, list):
+        regions = ",".join(regions)
     extra = data.get("extra", "")
 
     con = sqlite3.connect(DB)
