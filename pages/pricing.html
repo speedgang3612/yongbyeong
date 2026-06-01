@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="용병 요금제 — 용병 라이더는 100% 무료. 플러스 지사를 위한 투명한 구독 플랜. 베이직·스탠다드·프리미엄." />
+  <title>요금제 — 용병</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+  <!--
+  ================================================================
+  !! 요금제 임시값 — 이 주석 블록에서만 수정하세요 !!
+  ================================================================
+  PLAN_BASIC_NAME       = "베이직"
+  PLAN_BASIC_PRICE_M    = 29000      (월간, 원)
+  PLAN_BASIC_PRICE_Y    = 24167      (연간 월 환산 = 290,000/12, 원)
+  PLAN_BASIC_PRICE_Y_TOTAL = 290000  (연간 총액, 원)
+  PLAN_BASIC_LIMIT      = 10         (월 요청 건수)
+
+  PLAN_STANDARD_NAME    = "스탠다드"
+  PLAN_STANDARD_PRICE_M = 59000      (월간, 원)
+  PLAN_STANDARD_PRICE_Y = 49167      (연간 월 환산 = 590,000/12, 원)
+  PLAN_STANDARD_PRICE_Y_TOTAL = 590000
+  PLAN_STANDARD_LIMIT   = 30         (월 요청 건수)
+  PLAN_STANDARD_POPULAR = true
+
+  PLAN_PREMIUM_NAME     = "프리미엄"
+  PLAN_PREMIUM_PRICE_M  = 99000      (월간, 원)
+  PLAN_PREMIUM_PRICE_Y  = 82500      (연간 월 환산 = 990,000/12, 원)
+  PLAN_PREMIUM_PRICE_Y_TOTAL = 990000
+  PLAN_PREMIUM_LIMIT    = "무제한"
+  ================================================================
+  -->
+
+  <style>
+    /* ==============================================
+       DESIGN TOKENS (index.html과 동일)
+    ============================================== */
+    :root {
+      --bg-0:        #080808;
+      --bg-1:        #0f0f0f;
+      --bg-2:        #1a1a1a;
+      --bg-3:        #222222;
+      --border:      rgba(255,255,255,0.08);
+      --border-red:  rgba(229,57,53,0.5);
+      --border-green:rgba(34,197,94,0.4);
+
+      --red:         #E53935;
+      --red-hover:   #c62828;
+      --red-glow:    rgba(229,57,53,0.15);
+
+      --green:       #22c55e;
+      --green-bg:    rgba(34,197,94,0.1);
+
+      --white:       #ffffff;
+      --gray-1:      #cccccc;
+      --gray-2:      #888888;
+      --gray-3:      #444444;
+
+      --font:        'Outfit', sans-serif;
+      --radius-sm:   8px;
+      --radius-md:   14px;
+      --radius-lg:   22px;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.45);
+      --shadow-red:  0 0 40px rgba(229,57,53,0.25);
+
+      --transition:  0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ==============================================
+       RESET & BASE
+    ============================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-0);
+      color: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: var(--font); cursor: pointer; border: none; outline: none; }
+
+    /* ==============================================
+       UTILITY
+    ============================================== */
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .badge-red {
+      background: var(--red-glow);
+      border: 1px solid var(--border-red);
+      color: #ff6b6b;
+    }
+    .badge-green {
+      background: var(--green-bg);
+      border: 1px solid var(--border-green);
+      color: var(--green);
+    }
+    .badge-yellow {
+      background: rgba(250,204,21,0.1);
+      border: 1px solid rgba(250,204,21,0.35);
+      color: #facc15;
+    }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--red);
+      color: var(--white);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+    .btn-primary:hover {
+      background: var(--red-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-red);
+    }
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: transparent;
+      color: var(--white);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: border-color var(--transition), background var(--transition), transform var(--transition);
+    }
+    .btn-outline:hover {
+      border-color: var(--white);
+      background: rgba(255,255,255,0.06);
+      transform: translateY(-2px);
+    }
+
+    /* ==============================================
+       NAV (index.html과 동일)
+    ============================================== */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      background: rgba(8,8,8,0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+    .nav-inner {
+      max-width: 1160px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-logo .logo-dot {
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(1.4); }
+    }
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-menu a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--gray-2);
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-menu a:hover,
+    .nav-menu a.active { color: var(--white); }
+    .nav-menu a.active::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -4px;
+      height: 2px;
+      background: var(--red);
+      border-radius: 2px;
+    }
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-cta .btn-ghost {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--gray-1);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition), color var(--transition);
+    }
+    .nav-cta .btn-ghost:hover { background: var(--bg-3); color: var(--white); }
+    .nav-cta .btn-nav-primary {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--white);
+      background: var(--red);
+      padding: 9px 20px;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition);
+    }
+    .nav-cta .btn-nav-primary:hover { background: var(--red-hover); }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 6px;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      top: 68px; left: 0; right: 0; bottom: 0;
+      background: rgba(8,8,8,0.97);
+      backdrop-filter: blur(16px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      z-index: 99;
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-2);
+      transition: color var(--transition);
+    }
+    .nav-mobile a:hover { color: var(--white); }
+
+    /* ==============================================
+       PAGE HEADER
+    ============================================== */
+    #page-header {
+      padding: 160px 0 80px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .page-header-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 70% at 50% 0%, rgba(229,57,53,0.1) 0%, transparent 65%),
+        linear-gradient(160deg, #0f0f0f 0%, #080808 100%);
+    }
+    .page-header-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 100% at 50% 0%, black 30%, transparent 80%);
+    }
+    .page-header-content {
+      position: relative;
+      z-index: 1;
+    }
+    .page-header-tag {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 20px;
+      display: block;
+    }
+    .page-header-headline {
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 18px;
+    }
+    .page-header-sub {
+      font-size: 1.05rem;
+      color: var(--gray-2);
+      margin-bottom: 28px;
+      line-height: 1.7;
+    }
+
+    /* ==============================================
+       BILLING TOGGLE
+    ============================================== */
+    #billing-toggle {
+      padding: 0 0 80px;
+    }
+    .toggle-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+    .toggle-label {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--gray-2);
+      transition: color var(--transition);
+    }
+    .toggle-label.active { color: var(--white); }
+    .toggle-switch {
+      position: relative;
+      width: 52px; height: 28px;
+      background: var(--bg-3);
+      border: 1.5px solid var(--border);
+      border-radius: 100px;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .toggle-switch.yearly { background: var(--red); border-color: var(--red); }
+    .toggle-thumb {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 20px; height: 20px;
+      background: var(--white);
+      border-radius: 50%;
+      transition: transform var(--transition);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    .toggle-switch.yearly .toggle-thumb { transform: translateX(24px); }
+
+    /* ==============================================
+       PRICING CARDS
+    ============================================== */
+    #pricing-cards {
+      padding: 0 0 100px;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    .plan-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 32px;
+      position: relative;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+    .plan-card:hover {
+      border-color: rgba(255,255,255,0.16);
+      transform: translateY(-4px);
+    }
+    .plan-card.featured {
+      border-color: var(--border-red);
+      background: linear-gradient(160deg, #1e1212 0%, var(--bg-2) 60%);
+      box-shadow: var(--shadow-red);
+      transform: translateY(-8px);
+      z-index: 1;
+    }
+    .plan-card.featured:hover { transform: translateY(-12px); }
+
+    .plan-badge-wrap {
+      min-height: 32px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+    .popular-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--red-glow);
+      border: 1px solid var(--border-red);
+      color: #ff8a80;
+    }
+
+    .plan-name {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-2);
+      margin-bottom: 16px;
+    }
+    .plan-price-wrap {
+      margin-bottom: 6px;
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+    }
+    .plan-currency {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gray-1);
+      align-self: flex-start;
+      margin-top: 8px;
+    }
+    .plan-price {
+      font-size: clamp(2.4rem, 4vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: var(--white);
+      line-height: 1;
+    }
+    .plan-period {
+      font-size: 0.82rem;
+      color: var(--gray-2);
+      margin-bottom: 8px;
+    }
+    .plan-yearly-note {
+      font-size: 0.78rem;
+      color: var(--green);
+      background: var(--green-bg);
+      border: 1px solid var(--border-green);
+      border-radius: var(--radius-sm);
+      padding: 4px 10px;
+      display: inline-block;
+      margin-bottom: 24px;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .plan-yearly-note.show { opacity: 1; }
+    .plan-divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 24px;
+    }
+    .plan-features {
+      list-style: none;
+      margin-bottom: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .plan-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.88rem;
+      color: var(--gray-1);
+    }
+    .plan-features li.included .feat-icon { color: var(--green); }
+    .plan-features li.excluded {
+      color: var(--gray-3);
+      text-decoration: line-through;
+      text-decoration-color: var(--gray-3);
+    }
+    .plan-features li.excluded .feat-icon { color: var(--gray-3); }
+    .feat-icon {
+      width: 18px;
+      flex-shrink: 0;
+      font-size: 0.85rem;
+      margin-top: 1px;
+    }
+    .plan-cta {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+    }
+    .plan-cta-primary {
+      background: var(--red);
+      color: var(--white);
+    }
+    .plan-cta-primary:hover {
+      background: var(--red-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-red);
+    }
+    .plan-cta-outline {
+      background: transparent;
+      color: var(--white);
+      border: 1.5px solid rgba(255,255,255,0.2);
+    }
+    .plan-cta-outline:hover {
+      border-color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.05);
+      transform: translateY(-2px);
+    }
+    .plan-vat-note {
+      text-align: center;
+      font-size: 0.72rem;
+      color: var(--gray-3);
+      margin-top: 10px;
+    }
+
+    /* ==============================================
+       FAQ
+    ============================================== */
+    #faq {
+      padding: 80px 0 100px;
+      background: var(--bg-1);
+      border-top: 1px solid var(--border);
+    }
+    .faq-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .faq-header h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+    }
+    .faq-list {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+    .faq-item:first-child { border-top: 1px solid var(--border); }
+    .faq-question {
+      width: 100%;
+      background: none;
+      color: var(--white);
+      text-align: left;
+      padding: 22px 0;
+      font-size: 0.97rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      cursor: pointer;
+      transition: color var(--transition);
+    }
+    .faq-question:hover { color: var(--gray-1); }
+    .faq-icon {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: background var(--transition), transform var(--transition);
+      font-size: 0.9rem;
+      color: var(--gray-2);
+    }
+    .faq-item.open .faq-icon {
+      background: var(--red-glow);
+      border-color: var(--border-red);
+      color: var(--red);
+      transform: rotate(45deg);
+    }
+    .faq-answer {
+      overflow: hidden;
+      max-height: 0;
+      transition: max-height 0.38s cubic-bezier(0.4,0,0.2,1), padding 0.38s;
+      padding: 0 0 0;
+    }
+    .faq-item.open .faq-answer {
+      max-height: 300px;
+      padding: 0 0 22px;
+    }
+    .faq-answer p {
+      font-size: 0.9rem;
+      color: var(--gray-2);
+      line-height: 1.75;
+    }
+
+    /* ==============================================
+       FINAL CTA
+    ============================================== */
+    #final-cta {
+      padding: 120px 0;
+      background: var(--bg-0);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #final-cta::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+    .cta-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(229,57,53,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-content { position: relative; z-index: 1; }
+    .cta-content h2 {
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 16px;
+    }
+    .cta-content p {
+      color: var(--gray-2);
+      font-size: 1rem;
+      margin-bottom: 40px;
+    }
+    .cta-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ==============================================
+       FOOTER
+    ============================================== */
+    #footer {
+      background: var(--bg-1);
+      border-top: 1px solid var(--border);
+      padding: 56px 0 36px;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer-brand .nav-logo { margin-bottom: 12px; }
+    .footer-brand p {
+      font-size: 0.82rem;
+      color: var(--gray-2);
+      line-height: 1.7;
+      max-width: 280px;
+    }
+    .footer-links { display: flex; gap: 64px; }
+    .footer-col h4 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-3);
+      margin-bottom: 16px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 10px; }
+    .footer-col a {
+      font-size: 0.85rem;
+      color: var(--gray-2);
+      transition: color var(--transition);
+    }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .footer-bottom p { font-size: 0.78rem; color: var(--gray-3); }
+    .footer-bottom-links { display: flex; gap: 20px; }
+    .footer-bottom-links a {
+      font-size: 0.78rem;
+      color: var(--gray-3);
+      transition: color var(--transition);
+    }
+    .footer-bottom-links a:hover { color: var(--gray-2); }
+
+    /* ==============================================
+       SCROLL REVEAL
+    ============================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* ==============================================
+       RESPONSIVE
+    ============================================== */
+    @media (max-width: 900px) {
+      .cards-grid {
+        grid-template-columns: 1fr;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+      .plan-card.featured { transform: none; }
+      .plan-card.featured:hover { transform: translateY(-4px); }
+    }
+    @media (max-width: 768px) {
+      .nav-menu, .nav-cta { display: none; }
+      .nav-toggle { display: flex; }
+
+      .footer-inner { flex-direction: column; gap: 36px; }
+      .footer-links { gap: 36px; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .footer-links { flex-direction: column; gap: 28px; }
+      .toggle-wrap { flex-direction: row; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAV ========== -->
+  <header id="nav" role="banner">
+    <nav class="nav-inner" aria-label="메인 내비게이션">
+      <a href="index.html" class="nav-logo" id="nav-logo">
+        <span class="logo-dot" aria-hidden="true"></span>
+        용병
+      </a>
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="index.html" id="nav-home">홈</a></li>
+        <li><a href="pricing.html" class="active" id="nav-pricing">요금제</a></li>
+        <li><a href="register.html" id="nav-register">회원가입</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="btn-ghost" id="nav-login">로그인</a>
+        <a href="register.html?type=agency" class="btn-nav-primary" id="nav-start">지사로 시작하기</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile nav -->
+  <nav class="nav-mobile" id="nav-mobile" aria-label="모바일 내비게이션">
+    <a href="index.html" id="mnav-home">홈</a>
+    <a href="pricing.html" id="mnav-pricing" style="color:var(--white)">요금제</a>
+    <a href="register.html" id="mnav-register">회원가입</a>
+    <a href="login.html" id="mnav-login" style="color:var(--gray-2)">로그인</a>
+    <a href="register.html?type=agency" class="btn-primary" id="mnav-start" style="margin-top:8px">지사로 시작하기</a>
+  </nav>
+
+  <main>
+
+    <!-- ========== PAGE HEADER ========== -->
+    <section id="page-header" aria-labelledby="page-heading">
+      <div class="page-header-bg" aria-hidden="true"></div>
+      <div class="page-header-grid" aria-hidden="true"></div>
+      <div class="container">
+        <div class="page-header-content">
+          <span class="page-header-tag" aria-hidden="true">Pricing</span>
+          <h1 class="page-header-headline" id="page-heading">
+            투명한 요금제,<br>세트를 지키는 비용
+          </h1>
+          <p class="page-header-sub">
+            용병 라이더는 완전 무료. 플러스 지사만 구독합니다.
+          </p>
+          <span class="badge badge-green" id="free-rider-badge">
+            ⚡ 용병 라이더는 100% 무료
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== BILLING TOGGLE ========== -->
+    <section id="billing-toggle" aria-label="결제 주기 선택">
+      <div class="container">
+        <div class="toggle-wrap">
+          <span class="toggle-label active" id="label-monthly">월간 결제</span>
+          <button
+            class="toggle-switch"
+            id="billing-switch"
+            role="switch"
+            aria-checked="false"
+            aria-label="연간 결제로 전환"
+          >
+            <div class="toggle-thumb"></div>
+          </button>
+          <span class="toggle-label" id="label-yearly">
+            연간 결제
+          </span>
+          <span class="badge badge-yellow" id="yearly-badge" aria-label="연간 결제 시 2개월 무료">
+            2개월 무료
+          </span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PRICING CARDS ========== -->
+    <section id="pricing-cards" aria-labelledby="plans-heading">
+      <h2 class="sr-only" id="plans-heading">요금제 플랜</h2>
+      <div class="container">
+        <div class="cards-grid">
+
+          <!-- !! 베이직 — 임시값 !! -->
+          <article class="plan-card reveal" id="card-basic" aria-label="베이직 플랜">
+            <div class="plan-badge-wrap"></div>
+            <div class="plan-name">베이직</div>
+            <div class="plan-price-wrap">
+              <span class="plan-currency" aria-hidden="true">₩</span>
+              <span class="plan-price" id="price-basic" data-monthly="29,000" data-yearly="24,167">29,000</span>
+            </div>
+            <div class="plan-period">/월 · VAT 별도</div>
+            <div class="plan-yearly-note" id="yearly-note-basic">연간 결제 시 ₩290,000 (2개월 무료)</div>
+            <div class="plan-divider"></div>
+            <ul class="plan-features" aria-label="베이직 플랜 포함 기능">
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                월 긴급 요청 <strong>10건</strong>
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                기본 라이더 매칭
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                라이더 프로필 조회
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                이메일 고객지원
+              </li>
+              <li class="excluded">
+                <span class="feat-icon" aria-hidden="true">–</span>
+                우선 매칭
+              </li>
+              <li class="excluded">
+                <span class="feat-icon" aria-hidden="true">–</span>
+                실시간 알림
+              </li>
+              <li class="excluded">
+                <span class="feat-icon" aria-hidden="true">–</span>
+                운영 통계 대시보드
+              </li>
+            </ul>
+            <a href="register.html?type=agency&plan=basic" class="plan-cta plan-cta-outline" id="cta-basic">
+              시작하기
+            </a>
+            <p class="plan-vat-note">* VAT 별도 · 임시 가격</p>
+          </article>
+
+          <!-- !! 스탠다드 — 임시값 !! -->
+          <article class="plan-card featured reveal" id="card-standard" aria-label="스탠다드 플랜 (가장 인기)">
+            <div class="plan-badge-wrap">
+              <span class="popular-badge" aria-label="가장 인기 있는 플랜">⭐ 가장 인기</span>
+            </div>
+            <div class="plan-name">스탠다드</div>
+            <div class="plan-price-wrap">
+              <span class="plan-currency" aria-hidden="true">₩</span>
+              <span class="plan-price" id="price-standard" data-monthly="59,000" data-yearly="49,167">59,000</span>
+            </div>
+            <div class="plan-period">/월 · VAT 별도</div>
+            <div class="plan-yearly-note" id="yearly-note-standard">연간 결제 시 ₩590,000 (2개월 무료)</div>
+            <div class="plan-divider"></div>
+            <ul class="plan-features" aria-label="스탠다드 플랜 포함 기능">
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                월 긴급 요청 <strong>30건</strong>
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                우선 라이더 매칭
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                라이더 프로필 조회
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                실시간 알림 (푸시·문자)
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                이메일 고객지원
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                기본 운영 통계
+              </li>
+              <li class="excluded">
+                <span class="feat-icon" aria-hidden="true">–</span>
+                전담 매니저 지원
+              </li>
+            </ul>
+            <a href="register.html?type=agency&plan=standard" class="plan-cta plan-cta-primary" id="cta-standard">
+              시작하기
+            </a>
+            <p class="plan-vat-note">* VAT 별도 · 임시 가격</p>
+          </article>
+
+          <!-- !! 프리미엄 — 임시값 !! -->
+          <article class="plan-card reveal" id="card-premium" aria-label="프리미엄 플랜">
+            <div class="plan-badge-wrap"></div>
+            <div class="plan-name">프리미엄</div>
+            <div class="plan-price-wrap">
+              <span class="plan-currency" aria-hidden="true">₩</span>
+              <span class="plan-price" id="price-premium" data-monthly="99,000" data-yearly="82,500">99,000</span>
+            </div>
+            <div class="plan-period">/월 · VAT 별도</div>
+            <div class="plan-yearly-note" id="yearly-note-premium">연간 결제 시 ₩990,000 (2개월 무료)</div>
+            <div class="plan-divider"></div>
+            <ul class="plan-features" aria-label="프리미엄 플랜 포함 기능">
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                월 긴급 요청 <strong>무제한</strong>
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                우선 라이더 매칭
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                라이더 프로필 조회
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                실시간 알림 (푸시·문자)
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                전담 매니저 지원
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                고급 운영 통계 대시보드
+              </li>
+              <li class="included">
+                <span class="feat-icon" aria-hidden="true">✓</span>
+                정산 자동화 연동 (예정)
+              </li>
+            </ul>
+            <a href="register.html?type=agency&plan=premium" class="plan-cta plan-cta-outline" id="cta-premium">
+              시작하기
+            </a>
+            <p class="plan-vat-note">* VAT 별도 · 임시 가격</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== FAQ ========== -->
+    <section id="faq" aria-labelledby="faq-heading">
+      <div class="container">
+        <div class="faq-header reveal">
+          <span class="section-tag">FAQ</span>
+          <h2 id="faq-heading">자주 묻는 질문</h2>
+        </div>
+        <div class="faq-list" role="list">
+
+          <div class="faq-item" role="listitem">
+            <button
+              class="faq-question"
+              id="faq-q1"
+              aria-expanded="false"
+              aria-controls="faq-a1"
+            >
+              용병 라이더는 정말 무료인가요?
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" id="faq-a1" role="region" aria-labelledby="faq-q1">
+              <p>네, 용병 라이더로 가입하고 활동하는 것은 완전히 무료입니다. 가입비, 월 구독료, 수수료 일체 없습니다. 지사의 요청에 지원하고 수락되면 바로 출동할 수 있습니다.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button
+              class="faq-question"
+              id="faq-q2"
+              aria-expanded="false"
+              aria-controls="faq-a2"
+            >
+              플랜은 언제든 변경할 수 있나요?
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" id="faq-a2" role="region" aria-labelledby="faq-q2">
+              <p>언제든지 플랜을 업그레이드하거나 다운그레이드할 수 있습니다. 업그레이드는 즉시 적용되며, 다운그레이드는 현재 결제 주기 종료 후 적용됩니다.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button
+              class="faq-question"
+              id="faq-q3"
+              aria-expanded="false"
+              aria-controls="faq-a3"
+            >
+              월 요청 한도를 초과하면 어떻게 되나요?
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" id="faq-a3" role="region" aria-labelledby="faq-q3">
+              <p>월 요청 한도를 초과하면 해당 월 내에는 추가 요청 등록이 제한됩니다. 다음 달 1일 자동 초기화됩니다. 한도 확장이 필요하다면 상위 플랜으로 업그레이드하시거나 고객지원팀에 문의해 주세요.</p>
+            </div>
+          </div>
+
+          <div class="faq-item" role="listitem">
+            <button
+              class="faq-question"
+              id="faq-q4"
+              aria-expanded="false"
+              aria-controls="faq-a4"
+            >
+              환불 정책은 어떻게 되나요?
+              <span class="faq-icon" aria-hidden="true">+</span>
+            </button>
+            <div class="faq-answer" id="faq-a4" role="region" aria-labelledby="faq-q4">
+              <p>구독 시작 후 7일 이내에 요청하시면 전액 환불됩니다. 7일 이후에는 잔여 기간에 대한 부분 환불이 적용됩니다. 자세한 사항은 이용약관을 참고하거나 고객지원팀에 문의해 주세요.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== FINAL CTA ========== -->
+    <section id="final-cta" aria-labelledby="cta-heading">
+      <div class="cta-glow" aria-hidden="true"></div>
+      <div class="container">
+        <div class="cta-content reveal">
+          <h2 id="cta-heading">세트를 지금 바로 지키세요</h2>
+          <p>숙련된 용병 라이더가 빠르게 출동합니다</p>
+          <div class="cta-actions">
+            <a href="register.html?type=agency" class="btn-primary" id="cta-agency-btn">
+              지사로 가입하기 →
+            </a>
+            <a href="register.html?type=rider" class="btn-outline" id="cta-rider-btn">
+              ⚡ 라이더는 무료 가입
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer id="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="nav-logo" style="margin-bottom:12px">
+            <span class="logo-dot" aria-hidden="true"></span>
+            용병
+          </div>
+          <p>플러스 지사의 세트 위기를 구하는<br>긴급 라이더 매칭 플랫폼</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4>서비스</h4>
+            <ul>
+              <li><a href="index.html" id="footer-home">홈</a></li>
+              <li><a href="pricing.html" id="footer-pricing">요금제</a></li>
+              <li><a href="register.html" id="footer-register">회원가입</a></li>
+              <li><a href="login.html" id="footer-login">로그인</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>라이더</h4>
+            <ul>
+              <li><a href="register.html?type=rider" id="footer-rider-join">라이더 가입</a></li>
+              <li><a href="rider/dashboard.html" id="footer-rider-dash">대시보드</a></li>
+              <li><a href="rider/requests.html" id="footer-rider-req">요청 목록</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>지사</h4>
+            <ul>
+              <li><a href="register.html?type=agency" id="footer-agency-join">지사 가입</a></li>
+              <li><a href="agency/dashboard.html" id="footer-agency-dash">대시보드</a></li>
+              <li><a href="agency/request-new.html" id="footer-agency-req">요청 등록</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 용병. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#" id="footer-terms">이용약관</a>
+          <a href="#" id="footer-privacy">개인정보처리방침</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ============================================================
+       요금제 데이터 — 변수 한 곳에서만 수정하세요
+       임시값입니다. 실제 운영 시 교체 필요
+    ============================================================ */
+    const PLANS = {
+      basic:    { monthly: '29,000', yearly: '24,167', yearlyTotal: '290,000' },
+      standard: { monthly: '59,000', yearly: '49,167', yearlyTotal: '590,000' },
+      premium:  { monthly: '99,000', yearly: '82,500', yearlyTotal: '990,000' },
+    };
+
+    // ============================================================
+    // NAV — 모바일 토글
+    // ============================================================
+    const toggle = document.getElementById('nav-toggle');
+    const mobileNav = document.getElementById('nav-mobile');
+    toggle.addEventListener('click', () => {
+      const open = mobileNav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    mobileNav.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        mobileNav.classList.remove('open');
+        document.body.style.overflow = '';
+        toggle.setAttribute('aria-expanded', false);
+      });
+    });
+
+    // ============================================================
+    // NAV — 스크롤 배경
+    // ============================================================
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.background = window.scrollY > 40
+        ? 'rgba(8,8,8,0.95)'
+        : 'rgba(8,8,8,0.75)';
+    });
+
+    // ============================================================
+    // BILLING TOGGLE
+    // ============================================================
+    const billingSwitch = document.getElementById('billing-switch');
+    const labelMonthly  = document.getElementById('label-monthly');
+    const labelYearly   = document.getElementById('label-yearly');
+    const yearlyBadge   = document.getElementById('yearly-badge');
+
+    // Price elements
+    const priceBasic     = document.getElementById('price-basic');
+    const priceStandard  = document.getElementById('price-standard');
+    const pricePremium   = document.getElementById('price-premium');
+    const noteBasic      = document.getElementById('yearly-note-basic');
+    const noteStandard   = document.getElementById('yearly-note-standard');
+    const notePremium    = document.getElementById('yearly-note-premium');
+
+    let isYearly = false;
+
+    function updateBilling() {
+      isYearly = !isYearly;
+      billingSwitch.classList.toggle('yearly', isYearly);
+      billingSwitch.setAttribute('aria-checked', isYearly);
+
+      labelMonthly.classList.toggle('active', !isYearly);
+      labelYearly.classList.toggle('active', isYearly);
+
+      // Update prices
+      priceBasic.textContent    = isYearly ? PLANS.basic.yearly    : PLANS.basic.monthly;
+      priceStandard.textContent = isYearly ? PLANS.standard.yearly : PLANS.standard.monthly;
+      pricePremium.textContent  = isYearly ? PLANS.premium.yearly  : PLANS.premium.monthly;
+
+      // Show/hide yearly note
+      noteBasic.classList.toggle('show', isYearly);
+      noteStandard.classList.toggle('show', isYearly);
+      notePremium.classList.toggle('show', isYearly);
+
+      // Update yearly note text
+      noteBasic.textContent     = `연간 결제 시 ₩${PLANS.basic.yearlyTotal} (2개월 무료)`;
+      noteStandard.textContent  = `연간 결제 시 ₩${PLANS.standard.yearlyTotal} (2개월 무료)`;
+      notePremium.textContent   = `연간 결제 시 ₩${PLANS.premium.yearlyTotal} (2개월 무료)`;
+
+      // Quarterly badge animation
+      yearlyBadge.style.transform = isYearly ? 'scale(1.05)' : 'scale(1)';
+      setTimeout(() => { yearlyBadge.style.transform = ''; }, 200);
+
+      // Update CTA links with billing param
+      const billing = isYearly ? '&billing=yearly' : '';
+      document.getElementById('cta-basic').href     = `register.html?type=agency&plan=basic${billing}`;
+      document.getElementById('cta-standard').href  = `register.html?type=agency&plan=standard${billing}`;
+      document.getElementById('cta-premium').href   = `register.html?type=agency&plan=premium${billing}`;
+    }
+
+    billingSwitch.addEventListener('click', updateBilling);
+    // Keyboard support
+    billingSwitch.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateBilling(); }
+    });
+
+    // ============================================================
+    // FAQ ACCORDION
+    // ============================================================
+    document.querySelectorAll('.faq-question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.closest('.faq-item');
+        const isOpen = item.classList.contains('open');
+
+        // Close all
+        document.querySelectorAll('.faq-item').forEach(i => {
+          i.classList.remove('open');
+          i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+        });
+
+        // Open clicked (unless was already open)
+        if (!isOpen) {
+          item.classList.add('open');
+          btn.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    // ============================================================
+    // SCROLL REVEAL
+    // ============================================================
+    const reveals = document.querySelectorAll('.reveal');
+    const revealObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          revealObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => revealObs.observe(el));
+  </script>
+
+  <!-- Screen reader only utility -->
+  <style>
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+    }
+  </style>
+
+</body>
+</html>

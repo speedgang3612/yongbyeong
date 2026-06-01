@@ -1,0 +1,1144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="플러스 지사의 세트 위기를 구하는 긴급 라이더 매칭 플랫폼 — 용병. 숙련된 배달 라이더가 빠르게 출동합니다." />
+  <title>용병 — 세트가 무너지기 전에, 용병을 부르세요</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ==============================================
+       DESIGN TOKENS
+    ============================================== */
+    :root {
+      --bg-0:       #080808;
+      --bg-1:       #0f0f0f;
+      --bg-2:       #1a1a1a;
+      --bg-3:       #222222;
+      --border:     rgba(255,255,255,0.08);
+      --border-red: rgba(229,57,53,0.5);
+
+      --red:        #E53935;
+      --red-hover:  #c62828;
+      --red-glow:   rgba(229,57,53,0.15);
+
+      --white:      #ffffff;
+      --gray-1:     #cccccc;
+      --gray-2:     #888888;
+      --gray-3:     #444444;
+
+      --font:       'Outfit', sans-serif;
+      --radius-sm:  8px;
+      --radius-md:  14px;
+      --radius-lg:  22px;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.45);
+      --shadow-red:  0 0 32px rgba(229,57,53,0.2);
+
+      --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ==============================================
+       RESET & BASE
+    ============================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-0);
+      color: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { display: block; max-width: 100%; }
+    button { font-family: var(--font); cursor: pointer; border: none; outline: none; }
+
+    /* ==============================================
+       UTILITY
+    ============================================== */
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .badge-red {
+      background: var(--red-glow);
+      border: 1px solid var(--border-red);
+      color: #ff6b6b;
+    }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--red);
+      color: var(--white);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+    .btn-primary:hover {
+      background: var(--red-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-red);
+    }
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: transparent;
+      color: var(--white);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: border-color var(--transition), background var(--transition), transform var(--transition);
+    }
+    .btn-outline:hover {
+      border-color: var(--white);
+      background: rgba(255,255,255,0.06);
+      transform: translateY(-2px);
+    }
+
+    /* ==============================================
+       NAV
+    ============================================== */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      background: rgba(8,8,8,0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+    .nav-inner {
+      max-width: 1160px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-logo .logo-dot {
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(1.4); }
+    }
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-menu a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--gray-2);
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-menu a:hover,
+    .nav-menu a.active {
+      color: var(--white);
+    }
+    .nav-menu a.active::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -4px;
+      height: 2px;
+      background: var(--red);
+      border-radius: 2px;
+    }
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-cta .btn-ghost {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--gray-1);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition), color var(--transition);
+    }
+    .nav-cta .btn-ghost:hover { background: var(--bg-3); color: var(--white); }
+    .nav-cta .btn-nav-primary {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--white);
+      background: var(--red);
+      padding: 9px 20px;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition);
+    }
+    .nav-cta .btn-nav-primary:hover { background: var(--red-hover); }
+
+    /* Hamburger */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 6px;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      top: 68px; left: 0; right: 0; bottom: 0;
+      background: rgba(8,8,8,0.97);
+      backdrop-filter: blur(16px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      z-index: 99;
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-2);
+      transition: color var(--transition);
+    }
+    .nav-mobile a:hover { color: var(--white); }
+
+    /* ==============================================
+       HERO
+    ============================================== */
+    #hero {
+      min-height: 100svh;
+      display: flex;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      padding-top: 68px;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 60% 40%, rgba(229,57,53,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 40% at 10% 80%, rgba(229,57,53,0.06) 0%, transparent 60%),
+        linear-gradient(160deg, #0f0f0f 0%, #080808 100%);
+      z-index: 0;
+    }
+    .hero-grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+      background-size: 60px 60px;
+      z-index: 0;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 80%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+    }
+    .hero-eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow-line {
+      width: 36px; height: 2px;
+      background: var(--red);
+      border-radius: 2px;
+    }
+    .hero-eyebrow span {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--red);
+    }
+    .hero-headline {
+      font-size: clamp(2.6rem, 6vw, 5rem);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      margin-bottom: 24px;
+    }
+    .hero-headline em {
+      font-style: normal;
+      color: var(--red);
+      position: relative;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      font-weight: 400;
+      color: var(--gray-2);
+      line-height: 1.7;
+      max-width: 520px;
+      margin-bottom: 40px;
+    }
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+    }
+    .hero-actions .btn-primary { padding: 16px 34px; font-size: 1rem; }
+    .hero-actions .btn-outline { padding: 16px 34px; font-size: 1rem; }
+    .hero-scroll {
+      position: absolute;
+      bottom: 36px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--gray-3);
+      font-size: 0.72rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: fadeInUp 1s 1s both;
+    }
+    .scroll-arrow {
+      width: 20px; height: 20px;
+      border-right: 2px solid var(--gray-3);
+      border-bottom: 2px solid var(--gray-3);
+      transform: rotate(45deg);
+      animation: scrollBounce 2s infinite;
+    }
+    @keyframes scrollBounce {
+      0%,100% { transform: rotate(45deg) translateY(0); }
+      50%      { transform: rotate(45deg) translateY(6px); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateX(-50%) translateY(16px); }
+      to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    /* ==============================================
+       HOW IT WORKS
+    ============================================== */
+    #how-it-works {
+      padding: 120px 0;
+      background: var(--bg-1);
+      position: relative;
+    }
+    #how-it-works::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+    .how-header {
+      text-align: center;
+      margin-bottom: 72px;
+    }
+    .how-header h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .how-header p {
+      color: var(--gray-2);
+      font-size: 1rem;
+    }
+    .how-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 32px;
+    }
+    .how-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 40px 36px;
+    }
+    .how-card-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+    }
+    .how-card-icon {
+      width: 42px; height: 42px;
+      border-radius: var(--radius-sm);
+      background: var(--red-glow);
+      border: 1px solid var(--border-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+    }
+    .how-card-title h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--gray-1);
+    }
+    .how-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+    .how-step {
+      display: flex;
+      gap: 16px;
+      position: relative;
+    }
+    .how-step:not(:last-child) {
+      padding-bottom: 28px;
+    }
+    .how-step-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .how-step-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: var(--bg-3);
+      border: 1.5px solid var(--border-red);
+      color: var(--red);
+      font-size: 0.78rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .how-step-line {
+      width: 1.5px;
+      flex: 1;
+      background: linear-gradient(to bottom, var(--red-glow), transparent);
+      margin-top: 6px;
+    }
+    .how-step-content {
+      padding-top: 4px;
+    }
+    .how-step-content strong {
+      display: block;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .how-step-content span {
+      font-size: 0.82rem;
+      color: var(--gray-2);
+    }
+
+    /* ==============================================
+       STATS
+    ============================================== */
+    #stats {
+      padding: 100px 0;
+      background: var(--bg-0);
+      position: relative;
+    }
+    #stats::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+    .stats-header {
+      text-align: center;
+      margin-bottom: 64px;
+    }
+    .stats-header h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    .stat-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 48px 32px;
+      text-align: center;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+    .stat-card:hover {
+      border-color: var(--border-red);
+      transform: translateY(-4px);
+    }
+    .stat-num {
+      font-size: clamp(2.4rem, 5vw, 3.6rem);
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      color: var(--red);
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .stat-label {
+      font-size: 0.88rem;
+      color: var(--gray-2);
+      font-weight: 500;
+    }
+
+    /* ==============================================
+       PRICING TEASER
+    ============================================== */
+    #pricing-teaser {
+      padding: 100px 0;
+      background: var(--bg-1);
+      position: relative;
+    }
+    #pricing-teaser::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+    .teaser-header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .teaser-header h2 {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      margin-bottom: 12px;
+    }
+    .teaser-header p {
+      color: var(--gray-2);
+      font-size: 1rem;
+    }
+    .teaser-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    .teaser-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 32px 28px;
+      text-align: center;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+    .teaser-card:hover { border-color: var(--border-red); transform: translateY(-4px); }
+    .teaser-card.featured {
+      border-color: var(--border-red);
+      background: linear-gradient(145deg, #1e1212, var(--bg-2));
+      box-shadow: var(--shadow-red);
+    }
+    .teaser-card-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--gray-2);
+      margin-bottom: 16px;
+    }
+    .teaser-card-price {
+      font-size: 2rem;
+      font-weight: 900;
+      color: var(--white);
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .teaser-card-price sup { font-size: 0.9rem; font-weight: 600; vertical-align: top; margin-top: 6px; }
+    .teaser-card-period { font-size: 0.8rem; color: var(--gray-2); margin-bottom: 16px; }
+    .teaser-card-limit { font-size: 0.85rem; color: var(--gray-1); }
+    .teaser-more {
+      text-align: center;
+    }
+
+    /* ==============================================
+       FINAL CTA
+    ============================================== */
+    #final-cta {
+      padding: 120px 0;
+      background: var(--bg-0);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    #final-cta::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+    .cta-glow {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 300px;
+      background: radial-gradient(ellipse, rgba(229,57,53,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .cta-content { position: relative; z-index: 1; }
+    .cta-content h2 {
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 18px;
+    }
+    .cta-content p {
+      color: var(--gray-2);
+      font-size: 1.05rem;
+      margin-bottom: 40px;
+    }
+    .cta-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ==============================================
+       FOOTER
+    ============================================== */
+    #footer {
+      background: var(--bg-1);
+      border-top: 1px solid var(--border);
+      padding: 56px 0 36px;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer-brand .nav-logo { margin-bottom: 12px; }
+    .footer-brand p {
+      font-size: 0.82rem;
+      color: var(--gray-2);
+      line-height: 1.7;
+      max-width: 280px;
+    }
+    .footer-links {
+      display: flex;
+      gap: 64px;
+    }
+    .footer-col h4 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-3);
+      margin-bottom: 16px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 10px; }
+    .footer-col a {
+      font-size: 0.85rem;
+      color: var(--gray-2);
+      transition: color var(--transition);
+    }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .footer-bottom p {
+      font-size: 0.78rem;
+      color: var(--gray-3);
+    }
+    .footer-bottom-links {
+      display: flex;
+      gap: 20px;
+    }
+    .footer-bottom-links a {
+      font-size: 0.78rem;
+      color: var(--gray-3);
+      transition: color var(--transition);
+    }
+    .footer-bottom-links a:hover { color: var(--gray-2); }
+
+    /* ==============================================
+       ANIMATIONS
+    ============================================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ==============================================
+       RESPONSIVE
+    ============================================== */
+    @media (max-width: 768px) {
+      .nav-menu, .nav-cta { display: none; }
+      .nav-toggle { display: flex; }
+
+      .hero-headline { font-size: clamp(2rem, 9vw, 3rem); }
+      .hero-actions { flex-direction: column; align-items: flex-start; }
+      .hero-actions .btn-primary,
+      .hero-actions .btn-outline { width: 100%; justify-content: center; }
+
+      .how-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr; gap: 16px; }
+      .teaser-cards { grid-template-columns: 1fr; gap: 16px; }
+
+      .footer-inner { flex-direction: column; gap: 36px; }
+      .footer-links { gap: 36px; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .footer-links { flex-direction: column; gap: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAV ========== -->
+  <header id="nav" role="banner">
+    <nav class="nav-inner" aria-label="메인 내비게이션">
+      <a href="index.html" class="nav-logo" id="nav-logo">
+        <span class="logo-dot" aria-hidden="true"></span>
+        용병
+      </a>
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="index.html" class="active" id="nav-home">홈</a></li>
+        <li><a href="pricing.html" id="nav-pricing">요금제</a></li>
+        <li><a href="register.html" id="nav-register">회원가입</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="btn-ghost" id="nav-login">로그인</a>
+        <a href="register.html" class="btn-nav-primary" id="nav-start">라이더 무료 가입</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile nav -->
+  <nav class="nav-mobile" id="nav-mobile" aria-label="모바일 내비게이션">
+    <a href="index.html" id="mnav-home">홈</a>
+    <a href="pricing.html" id="mnav-pricing">요금제</a>
+    <a href="register.html" id="mnav-register">회원가입</a>
+    <a href="login.html" id="mnav-login" style="color:var(--gray-2)">로그인</a>
+    <a href="register.html" class="btn-primary" id="mnav-start" style="margin-top:8px">라이더 무료 가입</a>
+  </nav>
+
+  <main>
+    <!-- ========== HERO ========== -->
+    <section id="hero" aria-labelledby="hero-heading">
+      <div class="hero-bg" aria-hidden="true"></div>
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="container">
+        <div class="hero-content">
+          <div class="hero-eyebrow">
+            <div class="hero-eyebrow-line"></div>
+            <span>긴급 라이더 매칭 플랫폼</span>
+          </div>
+          <h1 class="hero-headline" id="hero-heading">
+            세트가 무너지기<br>
+            전에, <em>용병을</em><br>
+            부르세요
+          </h1>
+          <p class="hero-sub">
+            숙련된 배달 라이더가 빠르게 출동합니다.<br>
+            플러스 지사의 세트 위기, 지금 바로 해결하세요.
+          </p>
+          <div class="hero-actions">
+            <a href="register.html?type=rider" class="btn-primary" id="hero-rider-cta">
+              ⚡ 용병 라이더로 가입
+            </a>
+            <a href="register.html?type=agency" class="btn-outline" id="hero-agency-cta">
+              긴급 라이더 요청 →
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="hero-scroll" aria-hidden="true">
+        <span>scroll</span>
+        <div class="scroll-arrow"></div>
+      </div>
+    </section>
+
+    <!-- ========== HOW IT WORKS ========== -->
+    <section id="how-it-works" aria-labelledby="how-heading">
+      <div class="container">
+        <div class="how-header reveal">
+          <span class="section-tag">How It Works</span>
+          <h2 id="how-heading">간단하게, 빠르게</h2>
+          <p>복잡한 절차 없이 위기를 해결합니다</p>
+        </div>
+        <div class="how-grid">
+
+          <!-- 지사 -->
+          <div class="how-card reveal">
+            <div class="how-card-title">
+              <div class="how-card-icon" aria-hidden="true">🏢</div>
+              <h3>플러스 지사</h3>
+            </div>
+            <div class="how-steps">
+              <div class="how-step">
+                <div class="how-step-left">
+                  <div class="how-step-num">1</div>
+                  <div class="how-step-line"></div>
+                </div>
+                <div class="how-step-content">
+                  <strong>요청 등록</strong>
+                  <span>필요 인원, 시간, 지역, 보수 조건을 등록합니다</span>
+                </div>
+              </div>
+              <div class="how-step">
+                <div class="how-step-left">
+                  <div class="how-step-num">2</div>
+                  <div class="how-step-line"></div>
+                </div>
+                <div class="how-step-content">
+                  <strong>용병 매칭</strong>
+                  <span>숙련된 라이더가 지원합니다</span>
+                </div>
+              </div>
+              <div class="how-step">
+                <div class="how-step-left">
+                  <div class="how-step-num">3</div>
+                  <div class="how-step-line"></div>
+                </div>
+                <div class="how-step-content">
+                  <strong>출동 확정</strong>
+                  <span>프로필 확인 후 수락합니다</span>
+                </div>
+              </div>
+              <div class="how-step">
+                <div class="how-step-left">
+                  <div class="how-step-num">4</div>
+                </div>
+                <div class="how-step-content">
+                  <strong>세트 사수 ✓</strong>
+                  <span>관리비·프로모션 수령 가능</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 라이더 -->
+          <div class="how-card reveal">
+            <div class="how-card-title">
+              <div class="how-card-icon" aria-hidden="true">🏍</div>
+              <h3>용병 라이더</h3>
+            </div>
+            <div class="how-steps">
+              <div class="how-step">
+                <div class="how-step-left">
+                  <div class="how-step-num">1</div>
+                  <div class="how-step-line"></div>
+                </div>
+                <div class="how-step-content">
+                  <strong>프로필 등록</strong>
+                  <span>경력, 활동 지역, 장비를 등록합니다</span>
+                </div>
+              </div>
+              <div class="how-step">
+                <div class="how-step-left">
+                  <div class="how-step-num">2</div>
+                  <div class="how-step-line"></div>
+                </div>
+                <div class="how-step-content">
+                  <strong>요청 확인</strong>
+                  <span>원하는 날짜·지역·보수의 요청을 찾습니다</span>
+                </div>
+              </div>
+              <div class="how-step">
+                <div class="how-step-left">
+                  <div class="how-step-num">3</div>
+                  <div class="how-step-line"></div>
+                </div>
+                <div class="how-step-content">
+                  <strong>지원 및 출동</strong>
+                  <span>수락 받으면 바로 출동합니다</span>
+                </div>
+              </div>
+              <div class="how-step">
+                <div class="how-step-left">
+                  <div class="how-step-num">4</div>
+                </div>
+                <div class="how-step-content">
+                  <strong>수익 창출 ✓</strong>
+                  <span>일당 또는 건당으로 보수를 받습니다</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== STATS ========== -->
+    <section id="stats" aria-labelledby="stats-heading">
+      <div class="container">
+        <div class="stats-header reveal">
+          <span class="section-tag">Platform Stats</span>
+          <h2 id="stats-heading">숫자로 보는 용병</h2>
+        </div>
+        <div class="stats-grid">
+          <!-- !! 임시값. 실제 데이터 연동 시 수정 필요 !! -->
+          <div class="stat-card reveal">
+            <div class="stat-num" id="stat-riders">1,200+</div>
+            <div class="stat-label">등록 용병 수</div>
+          </div>
+          <div class="stat-card reveal">
+            <div class="stat-num" id="stat-matches">8,500+</div>
+            <div class="stat-label">매칭 완료 건수</div>
+          </div>
+          <div class="stat-card reveal">
+            <div class="stat-num" id="stat-rate">96%</div>
+            <div class="stat-label">세트 사수율</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PRICING TEASER ========== -->
+    <section id="pricing-teaser" aria-labelledby="pricing-head">
+      <div class="container">
+        <div class="teaser-header reveal">
+          <span class="section-tag">Pricing</span>
+          <h2 id="pricing-head">용병 라이더는 무료</h2>
+          <p>지사만 구독합니다. 투명한 요금제로 합리적으로 운영하세요.</p>
+        </div>
+        <div class="teaser-cards">
+          <!-- !! 요금제 임시값 — pricing.html과 동기화 필요 !! -->
+          <div class="teaser-card reveal">
+            <div class="teaser-card-name">베이직</div>
+            <div class="teaser-card-price"><sup>₩</sup>29,000</div>
+            <div class="teaser-card-period">/월 · VAT 별도</div>
+            <div class="teaser-card-limit">월 10건</div>
+          </div>
+          <div class="teaser-card featured reveal">
+            <div style="margin-bottom:8px"><span class="badge badge-red">⭐ 가장 인기</span></div>
+            <div class="teaser-card-name">스탠다드</div>
+            <div class="teaser-card-price"><sup>₩</sup>59,000</div>
+            <div class="teaser-card-period">/월 · VAT 별도</div>
+            <div class="teaser-card-limit">월 30건</div>
+          </div>
+          <div class="teaser-card reveal">
+            <div class="teaser-card-name">프리미엄</div>
+            <div class="teaser-card-price"><sup>₩</sup>99,000</div>
+            <div class="teaser-card-period">/월 · VAT 별도</div>
+            <div class="teaser-card-limit">무제한</div>
+          </div>
+        </div>
+        <div class="teaser-more reveal">
+          <a href="pricing.html" class="btn-outline" id="pricing-more-btn">자세한 요금제 보기 →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== FINAL CTA ========== -->
+    <section id="final-cta" aria-labelledby="cta-heading">
+      <div class="cta-glow" aria-hidden="true"></div>
+      <div class="container">
+        <div class="cta-content reveal">
+          <h2 id="cta-heading">지금 바로 시작하세요</h2>
+          <p>세트를 지키는 가장 빠른 방법</p>
+          <div class="cta-actions">
+            <a href="register.html?type=rider" class="btn-primary" id="cta-rider-btn">
+              ⚡ 용병 라이더로 무료 가입
+            </a>
+            <a href="register.html?type=agency" class="btn-outline" id="cta-agency-btn">
+              긴급 라이더 요청하기
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ========== FOOTER ========== -->
+  <footer id="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="nav-logo" style="margin-bottom:12px">
+            <span class="logo-dot" aria-hidden="true"></span>
+            용병
+          </div>
+          <p>플러스 지사의 세트 위기를 구하는<br>긴급 라이더 매칭 플랫폼</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4>서비스</h4>
+            <ul>
+              <li><a href="index.html" id="footer-home">홈</a></li>
+              <li><a href="pricing.html" id="footer-pricing">요금제</a></li>
+              <li><a href="register.html" id="footer-register">회원가입</a></li>
+              <li><a href="login.html" id="footer-login">로그인</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>라이더</h4>
+            <ul>
+              <li><a href="register.html?type=rider" id="footer-rider-join">라이더 가입</a></li>
+              <li><a href="pages/rider/dashboard.html" id="footer-rider-dash">대시보드</a></li>
+              <li><a href="pages/rider/requests.html" id="footer-rider-req">요청 목록</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>지사</h4>
+            <ul>
+              <li><a href="register.html?type=agency" id="footer-agency-join">지사 가입</a></li>
+              <li><a href="pages/agency/dashboard.html" id="footer-agency-dash">대시보드</a></li>
+              <li><a href="pages/agency/request-new.html" id="footer-agency-req">요청 등록</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 용병. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#" id="footer-terms">이용약관</a>
+          <a href="#" id="footer-privacy">개인정보처리방침</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ==============================
+    // NAV — 모바일 토글
+    // ==============================
+    const toggle = document.getElementById('nav-toggle');
+    const mobileNav = document.getElementById('nav-mobile');
+    toggle.addEventListener('click', () => {
+      const open = mobileNav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    mobileNav.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        mobileNav.classList.remove('open');
+        document.body.style.overflow = '';
+        toggle.setAttribute('aria-expanded', false);
+      });
+    });
+
+    // ==============================
+    // SCROLL REVEAL
+    // ==============================
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(el => observer.observe(el));
+
+    // ==============================
+    // NAV — 스크롤 시 배경 강화
+    // ==============================
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.background = window.scrollY > 40
+        ? 'rgba(8,8,8,0.95)'
+        : 'rgba(8,8,8,0.75)';
+    });
+
+    // ==============================
+    // 숫자 카운트업 애니메이션
+    // ==============================
+    function animateCount(el, target, suffix, duration) {
+      const isFloat = target % 1 !== 0;
+      const start = performance.now();
+      function step(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - t, 3);
+        const current = isFloat
+          ? (eased * target).toFixed(1)
+          : Math.floor(eased * target).toLocaleString('ko-KR');
+        el.textContent = current + suffix;
+        if (t < 1) requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    }
+
+    const statsObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        // !! 임시 숫자값 !!
+        animateCount(document.getElementById('stat-riders'), 1200, '+', 1800);
+        animateCount(document.getElementById('stat-matches'), 8500, '+', 2200);
+        animateCount(document.getElementById('stat-rate'),   96,   '%', 1600);
+        statsObs.disconnect();
+      });
+    }, { threshold: 0.3 });
+    statsObs.observe(document.getElementById('stats'));
+  </script>
+</body>
+</html>

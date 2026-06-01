@@ -1,0 +1,2075 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="용병 회원가입 — 용병 라이더 또는 플러스 지사로 참여하세요. 라이더는 100% 무료." />
+  <title>회원가입 — 용병</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ==============================================
+       DESIGN TOKENS (index.html과 동일)
+    ============================================== */
+    :root {
+      --bg-0:         #080808;
+      --bg-1:         #0f0f0f;
+      --bg-2:         #1a1a1a;
+      --bg-3:         #222222;
+      --border:       rgba(255,255,255,0.08);
+      --border-red:   rgba(229,57,53,0.5);
+      --border-green: rgba(34,197,94,0.4);
+
+      --red:          #E53935;
+      --red-hover:    #c62828;
+      --red-glow:     rgba(229,57,53,0.15);
+
+      --green:        #22c55e;
+      --green-bg:     rgba(34,197,94,0.1);
+
+      --white:        #ffffff;
+      --gray-1:       #cccccc;
+      --gray-2:       #888888;
+      --gray-3:       #444444;
+
+      --font:         'Outfit', sans-serif;
+      --radius-sm:    8px;
+      --radius-md:    14px;
+      --radius-lg:    22px;
+      --shadow-card:  0 4px 24px rgba(0,0,0,0.45);
+      --shadow-red:   0 0 32px rgba(229,57,53,0.2);
+      --shadow-green: 0 0 28px rgba(34,197,94,0.18);
+      --transition:   0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ==============================================
+       RESET & BASE
+    ============================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-0);
+      color: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      min-height: 100svh;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: var(--font); cursor: pointer; border: none; outline: none; }
+    input, select, textarea { font-family: var(--font); }
+
+    /* ==============================================
+       NAV (index.html과 동일)
+    ============================================== */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      background: rgba(8,8,8,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1160px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1.35rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-logo .logo-dot {
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.5; transform:scale(1.4); }
+    }
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-menu a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--gray-2);
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-menu a:hover { color: var(--white); }
+    .nav-menu a.active { color: var(--white); }
+    .nav-menu a.active::after {
+      content: '';
+      position: absolute;
+      left:0; right:0; bottom:-4px;
+      height: 2px;
+      background: var(--red);
+      border-radius: 2px;
+    }
+    .nav-cta { display: flex; align-items: center; gap: 12px; }
+    .btn-ghost {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--gray-1);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition), color var(--transition);
+      background: none;
+    }
+    .btn-ghost:hover { background: var(--bg-3); color: var(--white); }
+    .btn-nav-primary {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--white);
+      background: var(--red);
+      padding: 9px 20px;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition);
+    }
+    .btn-nav-primary:hover { background: var(--red-hover); }
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 6px;
+      background: none;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      top: 68px; left:0; right:0; bottom:0;
+      background: rgba(8,8,8,0.97);
+      backdrop-filter: blur(16px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      z-index: 99;
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-2);
+      transition: color var(--transition);
+    }
+    .nav-mobile a:hover { color: var(--white); }
+
+    /* ==============================================
+       PAGE SHELL
+    ============================================== */
+    .page-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 50% 0%,   rgba(229,57,53,0.07) 0%, transparent 65%),
+        radial-gradient(ellipse 40% 40% at 10% 100%, rgba(229,57,53,0.04) 0%, transparent 60%),
+        #080808;
+      pointer-events: none;
+    }
+    .page-grid {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 60px 60px;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 80%);
+      pointer-events: none;
+    }
+    .page-shell {
+      position: relative;
+      z-index: 1;
+      min-height: 100svh;
+      padding-top: 68px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: 60px;
+    }
+
+    /* ==============================================
+       STEP VIEWS  (기본 숨김)
+    ============================================== */
+    .step-view {
+      display: none;
+      width: 100%;
+      padding: 48px 24px 0;
+      animation: fadeUp 0.38s ease both;
+    }
+    .step-view.active { display: block; }
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    /* ==============================================
+       STEP 1 — 유형 선택
+    ============================================== */
+    .s1-wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .s1-logo {
+      font-size: 1.6rem;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 40px;
+    }
+    .s1-logo .logo-dot {
+      width: 9px; height: 9px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    .s1-title {
+      font-size: clamp(1.7rem, 4vw, 2.4rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+    .s1-sub {
+      font-size: 0.95rem;
+      color: var(--gray-2);
+      margin-bottom: 44px;
+    }
+    .type-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 36px;
+    }
+    .type-card {
+      background: var(--bg-2);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px 28px;
+      text-align: left;
+      cursor: pointer;
+      transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition), background var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .type-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .type-card-rider::before  { background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(34,197,94,0.08) 0%, transparent 70%); }
+    .type-card-agency::before { background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(229,57,53,0.08) 0%, transparent 70%); }
+    .type-card:hover::before  { opacity: 1; }
+    .type-card:hover {
+      transform: translateY(-4px);
+    }
+    .type-card-rider:hover  { border-color: var(--border-green); box-shadow: var(--shadow-green); }
+    .type-card-agency:hover { border-color: var(--border-red);   box-shadow: var(--shadow-red); }
+    .type-card-icon {
+      font-size: 2.2rem;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .type-card-name {
+      font-size: 1.05rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--white);
+    }
+    .free-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 10px;
+      border-radius: 100px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      background: var(--green-bg);
+      border: 1px solid var(--border-green);
+      color: var(--green);
+    }
+    .type-card-desc {
+      font-size: 0.85rem;
+      color: #aaaaaa;
+      line-height: 1.6;
+    }
+    .type-card-arrow {
+      position: absolute;
+      right: 24px; top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.2rem;
+      color: var(--gray-3);
+      transition: color var(--transition), transform var(--transition);
+    }
+    .type-card:hover .type-card-arrow {
+      color: var(--gray-2);
+      transform: translateY(-50%) translateX(4px);
+    }
+    .s1-login {
+      font-size: 0.87rem;
+      color: var(--gray-2);
+    }
+    .s1-login a {
+      color: var(--gray-1);
+      font-weight: 600;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: color var(--transition);
+    }
+    .s1-login a:hover { color: var(--white); }
+
+    /* ==============================================
+       STEP 2 — 폼 공통
+    ============================================== */
+    .form-wrap {
+      max-width: 540px;
+      margin: 0 auto;
+    }
+    .form-header {
+      margin-bottom: 36px;
+    }
+    .form-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--gray-2);
+      background: none;
+      padding: 0;
+      margin-bottom: 24px;
+      transition: color var(--transition);
+    }
+    .form-back:hover { color: var(--white); }
+    .form-back svg { width:14px; height:14px; stroke: currentColor; }
+    .form-type-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .badge-rider  { background: var(--green-bg); border: 1px solid var(--border-green); color: var(--green); }
+    .badge-agency { background: var(--red-glow);  border: 1px solid var(--border-red);   color: #ff8a80; }
+    .form-title {
+      font-size: clamp(1.6rem, 3.5vw, 2.2rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+    .form-subtitle {
+      font-size: 0.88rem;
+      color: var(--gray-2);
+    }
+
+    /* 카드 래퍼 */
+    .form-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 36px;
+      margin-bottom: 16px;
+    }
+
+    /* 섹션 구분 */
+    .form-section-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-3);
+      margin-bottom: 18px;
+    }
+    .form-section-label + .form-row { margin-top: 0; }
+
+    /* 입력 그리드 */
+    .form-row {
+      margin-bottom: 20px;
+    }
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--gray-1);
+      margin-bottom: 7px;
+    }
+    label .req {
+      color: var(--red);
+      margin-left: 3px;
+    }
+    .input-wrap {
+      position: relative;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"] {
+      width: 100%;
+      background: var(--bg-3);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--white);
+      font-size: 0.92rem;
+      font-weight: 500;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    input:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 0 3px rgba(229,57,53,0.12);
+    }
+    input.error {
+      border-color: var(--red);
+    }
+    input::placeholder { color: var(--gray-3); }
+    .field-error {
+      font-size: 0.76rem;
+      color: #ff7070;
+      margin-top: 5px;
+      display: none;
+    }
+    .field-error.show { display: block; }
+
+    /* 비밀번호 눈 아이콘 */
+    .pw-toggle {
+      position: absolute;
+      right: 12px; top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      color: var(--gray-3);
+      padding: 2px 4px;
+      font-size: 0.85rem;
+      transition: color var(--transition);
+    }
+    .pw-toggle:hover { color: var(--gray-2); }
+    input[type="password"] { padding-right: 42px; }
+
+    /* 비밀번호 강도 바 */
+    .pw-strength {
+      margin-top: 8px;
+      display: none;
+    }
+    .pw-strength.show { display: block; }
+    .pw-strength-bar {
+      height: 3px;
+      border-radius: 3px;
+      background: var(--bg-3);
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+    .pw-strength-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s ease, background 0.3s ease;
+      width: 0;
+    }
+    .pw-strength-text {
+      font-size: 0.72rem;
+      color: var(--gray-3);
+    }
+
+    /* =========================================
+       2단계 계층형 지역 선택 UI
+    ========================================= */
+
+    /* 시/도 칩 행 */
+    .sido-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 0;
+    }
+    .sido-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 8px 18px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: #111111;
+      border: 1px solid rgba(255,255,255,0.07);
+      color: #888888;
+      cursor: pointer;
+      transition: all var(--transition);
+      user-select: none;
+      white-space: nowrap;
+    }
+    .sido-chip:hover {
+      border-color: rgba(229,57,53,0.3);
+      color: #cccccc;
+    }
+    .sido-chip.active {
+      background: rgba(229,57,53,0.12);
+      border: 1px solid rgba(229,57,53,0.5);
+      color: #FF5252;
+      font-weight: 700;
+    }
+    .sido-arrow {
+      font-size: 0.65rem;
+      display: inline-block;
+      transition: transform 0.25s ease;
+      opacity: 0.7;
+    }
+    .sido-chip.active .sido-arrow {
+      transform: rotate(180deg);
+    }
+
+    /* 구/군 패널 */
+    .gu-panel {
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.3s ease, opacity 0.25s ease, margin 0.3s ease;
+      margin-top: 0;
+    }
+    .gu-panel.open {
+      max-height: 600px;
+      opacity: 1;
+      margin-top: 10px;
+    }
+    .gu-panel-inner {
+      background: rgba(229,57,53,0.03);
+      border: 1px solid rgba(229,57,53,0.12);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .gu-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+    .gu-chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 6px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      background: #1a1a1a;
+      border: 1px solid rgba(255,255,255,0.07);
+      color: #888888;
+      cursor: pointer;
+      transition: all var(--transition);
+      user-select: none;
+      white-space: nowrap;
+    }
+    .gu-chip:hover {
+      border-color: rgba(229,57,53,0.3);
+      color: #cccccc;
+    }
+    .gu-chip.selected {
+      background: rgba(229,57,53,0.15);
+      border: 1px solid rgba(229,57,53,0.4);
+      color: #FF5252;
+      font-weight: 600;
+    }
+    /* 전체 칩 */
+    .gu-chip-all {
+      background: rgba(255,255,255,0.04);
+      border-color: rgba(255,255,255,0.12);
+      color: #aaaaaa;
+      font-weight: 600;
+    }
+    .gu-chip-all.selected {
+      background: rgba(229,57,53,0.2);
+      border-color: rgba(229,57,53,0.5);
+      color: #FF5252;
+    }
+
+    /* 구분선 */
+    .gu-divider {
+      height: 1px;
+      background: rgba(229,57,53,0.1);
+      margin: 10px 0;
+    }
+
+    /* 선택된 지역 태그 영역 */
+    .selected-tags-wrap {
+      margin-top: 14px;
+    }
+    .selected-tags-label {
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: #555555;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: block;
+    }
+    .selected-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .selected-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(229,57,53,0.1);
+      border: 1px solid rgba(229,57,53,0.25);
+      color: #FF5252;
+      animation: tagIn 0.18s ease;
+    }
+    @keyframes tagIn {
+      from { opacity:0; transform: scale(0.85); }
+      to   { opacity:1; transform: scale(1); }
+    }
+    .tag-remove {
+      background: none;
+      color: rgba(255,82,82,0.6);
+      font-size: 0.85rem;
+      line-height: 1;
+      padding: 0;
+      transition: color var(--transition);
+    }
+    .tag-remove:hover { color: #FF5252; }
+    .no-region-hint {
+      font-size: 0.78rem;
+      color: #555555;
+      font-style: italic;
+    }
+
+    /* 레거시 호환 (getSelectedRegions 함수가 읽을 hidden) */
+    #rider-regions-hidden { display: none; }
+
+    /* 경력 라디오 */
+    .radio-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .radio-option {
+      flex: 1;
+      min-width: 90px;
+    }
+    .radio-option input[type="radio"] { display: none; }
+    .radio-option label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 8px;
+      border-radius: var(--radius-sm);
+      background: var(--bg-3);
+      border: 1.5px solid var(--border);
+      color: var(--gray-2);
+      font-size: 0.84rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all var(--transition);
+      margin: 0;
+    }
+    .radio-option input[type="radio"]:checked + label {
+      background: var(--red-glow);
+      border-color: var(--border-red);
+      color: var(--white);
+    }
+    .radio-option label:hover { border-color: rgba(255,255,255,0.2); color: var(--white); }
+
+    /* 구분선 */
+    .form-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 28px 0;
+    }
+
+    /* 약관 체크박스 */
+    .terms-box {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .terms-all {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .terms-all label {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--white);
+      cursor: pointer;
+    }
+    .terms-items {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .terms-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .terms-item label {
+      margin: 0;
+      font-size: 0.84rem;
+      color: var(--gray-2);
+      cursor: pointer;
+      flex: 1;
+    }
+    .terms-item a {
+      font-size: 0.78rem;
+      color: var(--gray-3);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+      transition: color var(--transition);
+      flex-shrink: 0;
+    }
+    .terms-item a:hover { color: var(--gray-2); }
+    /* 커스텀 체크박스 */
+    input[type="checkbox"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px; height: 18px;
+      border-radius: 5px;
+      border: 1.5px solid var(--border);
+      background: var(--bg-3);
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all var(--transition);
+      position: relative;
+    }
+    input[type="checkbox"]:checked {
+      background: var(--red);
+      border-color: var(--red);
+    }
+    input[type="checkbox"]:checked::after {
+      content: '';
+      position: absolute;
+      left: 4px; top: 1px;
+      width: 6px; height: 10px;
+      border: 2px solid white;
+      border-top: none;
+      border-left: none;
+      transform: rotate(40deg);
+    }
+
+    /* 제출 버튼 */
+    .btn-submit {
+      width: 100%;
+      padding: 16px;
+      background: var(--red);
+      color: var(--white);
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-submit::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 50%, transparent 100%);
+      transform: translateX(-100%);
+      transition: transform 0.5s ease;
+    }
+    .btn-submit:hover::after { transform: translateX(100%); }
+    .btn-submit:hover {
+      background: var(--red-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-red);
+    }
+    .btn-submit:active { transform: translateY(0); }
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    .form-submit-note {
+      text-align: center;
+      font-size: 0.78rem;
+      color: var(--gray-3);
+      margin-top: 12px;
+    }
+    .form-submit-note a {
+      color: var(--gray-2);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    /* ==============================================
+       STEP 3 — 완료
+    ============================================== */
+    .s3-wrap {
+      max-width: 480px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 20px 0;
+    }
+    .s3-icon-wrap {
+      width: 88px; height: 88px;
+      border-radius: 50%;
+      background: var(--green-bg);
+      border: 2px solid var(--border-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 32px;
+      animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes popIn {
+      0%   { opacity:0; transform:scale(0.4); }
+      100% { opacity:1; transform:scale(1); }
+    }
+    .s3-icon {
+      width: 40px; height: 40px;
+      stroke: var(--green);
+      stroke-width: 2.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .s3-check {
+      stroke-dasharray: 60;
+      stroke-dashoffset: 60;
+      animation: drawCheck 0.5s 0.35s ease forwards;
+    }
+    @keyframes drawCheck {
+      to { stroke-dashoffset: 0; }
+    }
+    .s3-title {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+    }
+    .s3-desc {
+      font-size: 0.95rem;
+      color: var(--gray-2);
+      line-height: 1.75;
+      margin-bottom: 40px;
+    }
+    .s3-desc strong { color: var(--white); }
+    .s3-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .btn-home {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 15px 32px;
+      background: var(--red);
+      color: var(--white);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+    .btn-home:hover {
+      background: var(--red-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-red);
+    }
+    .btn-login-after {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px 32px;
+      background: transparent;
+      color: var(--gray-1);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 0.92rem;
+      font-weight: 600;
+      transition: border-color var(--transition), background var(--transition);
+    }
+    .btn-login-after:hover {
+      border-color: rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.05);
+    }
+
+    /* ==============================================
+       FOOTER (간략)
+    ============================================== */
+    .page-footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 20px 24px 36px;
+      margin-top: -8px;
+    }
+    .page-footer p {
+      font-size: 0.76rem;
+      color: var(--gray-3);
+    }
+    .page-footer a {
+      color: var(--gray-3);
+      transition: color var(--transition);
+    }
+    .page-footer a:hover { color: var(--gray-2); }
+
+    /* ==============================================
+       SCREEN READER ONLY
+    ============================================== */
+    .sr-only {
+      position: absolute; width:1px; height:1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap;
+    }
+
+    /* ==============================================
+       RESPONSIVE
+    ============================================== */
+    @media (max-width: 768px) {
+      .nav-menu, .nav-cta { display: none; }
+      .nav-toggle { display: flex; }
+    }
+    @media (max-width: 600px) {
+      .type-cards  { grid-template-columns: 1fr; }
+      .form-row-2  { grid-template-columns: 1fr; }
+      .form-card   { padding: 24px 20px; }
+      .terms-box   { padding: 20px; }
+      .type-card   { padding: 28px 20px; }
+      .type-card-arrow { display: none; }
+      .radio-group { gap: 8px; }
+      .step-view   { padding-top: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-bg"  aria-hidden="true"></div>
+  <div class="page-grid" aria-hidden="true"></div>
+
+  <!-- ========== NAV ========== -->
+  <header id="nav" role="banner">
+    <nav class="nav-inner" aria-label="메인 내비게이션">
+      <a href="index.html" class="nav-logo" id="nav-logo">
+        <span class="logo-dot" aria-hidden="true"></span>
+        용병
+      </a>
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="index.html"   id="nav-home">홈</a></li>
+        <li><a href="pricing.html" id="nav-pricing">요금제</a></li>
+        <li><a href="register.html" class="active" id="nav-register">회원가입</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="login.html" class="btn-ghost" id="nav-login">로그인</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile nav -->
+  <nav class="nav-mobile" id="nav-mobile" aria-label="모바일 내비게이션">
+    <a href="index.html"   id="mnav-home">홈</a>
+    <a href="pricing.html" id="mnav-pricing">요금제</a>
+    <a href="register.html" id="mnav-register" style="color:var(--white)">회원가입</a>
+    <a href="login.html"   id="mnav-login" style="color:var(--gray-2)">로그인</a>
+  </nav>
+
+  <!-- ========== MAIN ========== -->
+  <main class="page-shell" id="main-shell">
+
+    <!-- ======= STEP 1: 유형 선택 ======= -->
+    <section class="step-view" id="step-type" aria-labelledby="step1-title">
+      <div class="s1-wrap">
+        <div class="s1-logo" aria-hidden="true">
+          <span class="logo-dot"></span>
+          용병
+        </div>
+        <h1 class="s1-title" id="step1-title">어떻게 참여하시나요?</h1>
+        <p class="s1-sub">참여 방식을 선택하면 맞춤 가입 폼으로 이동합니다</p>
+
+        <div class="type-cards" role="list">
+          <!-- 라이더 -->
+          <button
+            class="type-card type-card-rider"
+            id="btn-type-rider"
+            role="listitem"
+            aria-label="용병 라이더로 가입"
+            onclick="selectType('rider')"
+          >
+            <span class="type-card-icon" aria-hidden="true">⚡</span>
+            <span class="type-card-name">
+              용병 라이더로 가입
+              <span class="free-badge">무료</span>
+            </span>
+            <p class="type-card-desc">자유롭게 출동하고 일당/건당 수익을 창출하세요</p>
+            <span class="type-card-arrow" aria-hidden="true">→</span>
+          </button>
+
+          <!-- 지사 -->
+          <button
+            class="type-card type-card-agency"
+            id="btn-type-agency"
+            role="listitem"
+            aria-label="플러스 지사로 가입"
+            onclick="selectType('agency')"
+          >
+            <span class="type-card-icon" aria-hidden="true">🏢</span>
+            <span class="type-card-name">플러스 지사로 가입</span>
+            <p class="type-card-desc">세트 위기 시 숙련 라이더를 즉시 요청하세요</p>
+            <span class="type-card-arrow" aria-hidden="true">→</span>
+          </button>
+        </div>
+
+        <p class="s1-login">
+          이미 계정이 있으신가요?
+          <a href="login.html" id="s1-login-link">로그인</a>
+        </p>
+      </div>
+    </section>
+
+    <!-- ======= STEP 2-A: 라이더 폼 ======= -->
+    <section class="step-view" id="step-rider" aria-labelledby="rider-form-title">
+      <div class="form-wrap">
+        <div class="form-header">
+          <button class="form-back" id="rider-back-btn" onclick="goBack()" aria-label="유형 선택으로 돌아가기">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            뒤로
+          </button>
+          <div class="form-type-badge badge-rider">⚡ 용병 라이더</div>
+          <h1 class="form-title" id="rider-form-title">라이더 정보 입력</h1>
+          <p class="form-subtitle">가입 후 즉시 긴급 요청을 확인할 수 있습니다</p>
+        </div>
+
+        <!-- TODO: 백엔드 연동 시 action 속성과 method를 추가하고 JS 제출 로직 교체 -->
+        <form id="form-rider" novalidate>
+
+          <div class="form-card">
+            <div class="form-section-label">기본 정보</div>
+            <div class="form-row-2">
+              <div class="form-row" style="margin-bottom:0">
+                <label for="rider-name">이름<span class="req" aria-hidden="true">*</span></label>
+                <input type="text" id="rider-name" name="name" placeholder="홍길동" autocomplete="name" required />
+                <span class="field-error" id="err-rider-name">이름을 입력해주세요</span>
+              </div>
+              <div class="form-row" style="margin-bottom:0">
+                <label for="rider-phone">연락처<span class="req" aria-hidden="true">*</span></label>
+                <input type="tel" id="rider-phone" name="phone" placeholder="010-0000-0000" autocomplete="tel" required />
+                <span class="field-error" id="err-rider-phone">연락처를 입력해주세요</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-section-label">활동 지역</div>
+            <div class="form-row">
+              <label>활동 지역 <span style="color:var(--gray-3);font-weight:400">(복수 선택 가능)</span></label>
+
+              <!-- 시/도 칩 목록 -->
+              <div class="sido-chips" id="sido-chips" role="group" aria-label="시/도 선택"></div>
+
+              <!-- 구/군 펼침 패널 -->
+              <div class="gu-panel" id="gu-panel">
+                <div class="gu-panel-inner">
+                  <div class="gu-chips" id="gu-chips" role="group" aria-label="구/군 선택"></div>
+                </div>
+              </div>
+
+              <!-- 선택된 지역 태그 -->
+              <div class="selected-tags-wrap" id="selected-tags-wrap">
+                <span class="selected-tags-label">선택된 지역</span>
+                <div class="selected-tags" id="selected-tags"></div>
+                <p class="no-region-hint" id="no-region-hint">선택하지 않으면 전국으로 설정됩니다</p>
+              </div>
+
+              <!-- hidden: form data -->
+              <input type="hidden" id="rider-regions-hidden" name="regions" />
+              <span class="field-error" id="err-rider-region"></span>
+            </div>
+
+            <div class="form-divider"></div>
+
+            <div class="form-section-label">배달 경력</div>
+            <div class="form-row">
+              <label>경력 선택<span class="req" aria-hidden="true">*</span></label>
+              <div class="radio-group" role="radiogroup" aria-label="배달 경력 선택">
+                <div class="radio-option">
+                  <input type="radio" id="exp-lt1" name="experience" value="1년 미만" />
+                  <label for="exp-lt1">1년 미만</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" id="exp-1to3" name="experience" value="1~3년" />
+                  <label for="exp-1to3">1~3년</label>
+                </div>
+                <div class="radio-option">
+                  <input type="radio" id="exp-gt3" name="experience" value="3년 이상" />
+                  <label for="exp-gt3">3년 이상</label>
+                </div>
+              </div>
+              <span class="field-error" id="err-rider-exp">경력을 선택해주세요</span>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-section-label">계정 정보</div>
+            <div class="form-row">
+              <label for="rider-email">이메일<span class="req" aria-hidden="true">*</span></label>
+              <input type="email" id="rider-email" name="email" placeholder="example@email.com" autocomplete="email" required />
+              <span class="field-error" id="err-rider-email">올바른 이메일을 입력해주세요</span>
+            </div>
+            <div class="form-row">
+              <label for="rider-pw">비밀번호<span class="req" aria-hidden="true">*</span></label>
+              <div class="input-wrap">
+                <input type="password" id="rider-pw" name="password" placeholder="8자 이상" autocomplete="new-password" required minlength="8"
+                       oninput="checkPwStrength(this, 'rider-pw-strength')" />
+                <button type="button" class="pw-toggle" onclick="togglePw('rider-pw', this)" aria-label="비밀번호 보기/숨기기">👁</button>
+              </div>
+              <div class="pw-strength" id="rider-pw-strength">
+                <div class="pw-strength-bar"><div class="pw-strength-fill" id="rider-pw-fill"></div></div>
+                <span class="pw-strength-text" id="rider-pw-text"></span>
+              </div>
+              <span class="field-error" id="err-rider-pw">비밀번호는 8자 이상이어야 합니다</span>
+            </div>
+            <div class="form-row" style="margin-bottom:0">
+              <label for="rider-pw2">비밀번호 확인<span class="req" aria-hidden="true">*</span></label>
+              <div class="input-wrap">
+                <input type="password" id="rider-pw2" name="password2" placeholder="비밀번호 재입력" autocomplete="new-password" required />
+                <button type="button" class="pw-toggle" onclick="togglePw('rider-pw2', this)" aria-label="비밀번호 보기/숨기기">👁</button>
+              </div>
+              <span class="field-error" id="err-rider-pw2">비밀번호가 일치하지 않습니다</span>
+            </div>
+          </div>
+
+          <!-- 약관 -->
+          <div class="terms-box">
+            <div class="terms-all">
+              <input type="checkbox" id="rider-agree-all" onchange="toggleAllTerms('rider')" />
+              <label for="rider-agree-all">전체 동의</label>
+            </div>
+            <div class="terms-items">
+              <div class="terms-item">
+                <input type="checkbox" id="rider-agree1" name="terms" class="rider-term" onchange="syncAllCheck('rider')" required />
+                <label for="rider-agree1">[필수] 이용약관 동의</label>
+                <a href="#" id="rider-terms-link">보기</a>
+              </div>
+              <div class="terms-item">
+                <input type="checkbox" id="rider-agree2" name="privacy" class="rider-term" onchange="syncAllCheck('rider')" required />
+                <label for="rider-agree2">[필수] 개인정보 처리방침 동의</label>
+                <a href="#" id="rider-privacy-link">보기</a>
+              </div>
+              <div class="terms-item">
+                <input type="checkbox" id="rider-agree3" class="rider-term" onchange="syncAllCheck('rider')" />
+                <label for="rider-agree3">[선택] 마케팅 정보 수신 동의</label>
+              </div>
+            </div>
+            <span class="field-error" id="err-rider-terms" style="margin-top:10px">필수 약관에 동의해주세요</span>
+          </div>
+
+          <!-- TODO: 백엔드 연동 — fetch('/api/register/rider', { method:'POST', body: formData }) -->
+          <button type="submit" class="btn-submit" id="rider-submit-btn">
+            ⚡ 용병 라이더로 가입하기
+          </button>
+          <p class="form-submit-note">
+            가입하면 <a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에 동의하는 것으로 간주됩니다
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ======= STEP 2-B: 지사 폼 ======= -->
+    <section class="step-view" id="step-agency" aria-labelledby="agency-form-title">
+      <div class="form-wrap">
+        <div class="form-header">
+          <button class="form-back" id="agency-back-btn" onclick="goBack()" aria-label="유형 선택으로 돌아가기">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+            뒤로
+          </button>
+          <div class="form-type-badge badge-agency">🏢 플러스 지사</div>
+          <h1 class="form-title" id="agency-form-title">지사 정보 입력</h1>
+          <p class="form-subtitle">가입 후 즉시 긴급 라이더를 요청할 수 있습니다</p>
+        </div>
+
+        <!-- TODO: 백엔드 연동 시 action 속성과 method를 추가하고 JS 제출 로직 교체 -->
+        <form id="form-agency" novalidate>
+
+          <div class="form-card">
+            <div class="form-section-label">지사 정보</div>
+            <div class="form-row">
+              <label for="agency-name">지사명<span class="req" aria-hidden="true">*</span></label>
+              <input type="text" id="agency-name" name="agency_name" placeholder="강남 플러스 지사" required />
+              <span class="field-error" id="err-agency-name">지사명을 입력해주세요</span>
+            </div>
+            <div class="form-row" style="margin-bottom:0">
+              <label for="agency-biz">사업자등록번호<span class="req" aria-hidden="true">*</span></label>
+              <input type="text" id="agency-biz" name="business_number" placeholder="000-00-00000" maxlength="12" required />
+              <span class="field-error" id="err-agency-biz">사업자등록번호를 입력해주세요</span>
+            </div>
+          </div>
+
+          <!-- 운영 지역 선택 카드 -->
+          <div class="form-card" id="agency-region-card">
+            <div class="form-section-label">운영 지역</div>
+            <div class="form-row" style="margin-bottom:0">
+              <label>운영 지역<span class="req" aria-hidden="true">*</span>
+                <span style="color:var(--gray-3);font-weight:400;"> (복수 선택 가능 — 등록 후 지역별 공고 즉시 가능)</span>
+              </label>
+
+              <!-- 시/도 칩 목록 -->
+              <div class="sido-chips" id="agency-sido-chips" role="group" aria-label="시/도 선택"></div>
+
+              <!-- 구/군 패널들 (멀티 오픈: 시도마다 독립적으로 마운트) -->
+              <div id="agency-gu-panels"></div>
+
+              <!-- 선택된 운영 지역 태그 -->
+              <div class="selected-tags-wrap" id="agency-selected-tags-wrap">
+                <span class="selected-tags-label">선택된 운영 지역</span>
+                <div class="selected-tags" id="agency-selected-tags"></div>
+                <p class="no-region-hint" id="agency-no-region-hint">운영할 지역을 1개 이상 선택해주세요</p>
+              </div>
+
+              <!-- hidden: form data -->
+              <input type="hidden" id="agency-regions-hidden" name="operating_regions" />
+              <span class="field-error" id="err-agency-region">운영 지역을 최소 1개 이상 선택해주세요</span>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-section-label">담당자 정보</div>
+            <div class="form-row-2">
+              <div class="form-row" style="margin-bottom:0">
+                <label for="agency-manager">담당자 이름<span class="req" aria-hidden="true">*</span></label>
+                <input type="text" id="agency-manager" name="manager_name" placeholder="홍길동" autocomplete="name" required />
+                <span class="field-error" id="err-agency-manager">담당자 이름을 입력해주세요</span>
+              </div>
+              <div class="form-row" style="margin-bottom:0">
+                <label for="agency-phone">연락처<span class="req" aria-hidden="true">*</span></label>
+                <input type="tel" id="agency-phone" name="phone" placeholder="010-0000-0000" autocomplete="tel" required />
+                <span class="field-error" id="err-agency-phone">연락처를 입력해주세요</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-section-label">계정 정보</div>
+            <div class="form-row">
+              <label for="agency-email">이메일<span class="req" aria-hidden="true">*</span></label>
+              <input type="email" id="agency-email" name="email" placeholder="agency@example.com" autocomplete="email" required />
+              <span class="field-error" id="err-agency-email">올바른 이메일을 입력해주세요</span>
+            </div>
+            <div class="form-row">
+              <label for="agency-pw">비밀번호<span class="req" aria-hidden="true">*</span></label>
+              <div class="input-wrap">
+                <input type="password" id="agency-pw" name="password" placeholder="8자 이상" autocomplete="new-password" required minlength="8"
+                       oninput="checkPwStrength(this, 'agency-pw-strength')" />
+                <button type="button" class="pw-toggle" onclick="togglePw('agency-pw', this)" aria-label="비밀번호 보기/숨기기">👁</button>
+              </div>
+              <div class="pw-strength" id="agency-pw-strength">
+                <div class="pw-strength-bar"><div class="pw-strength-fill" id="agency-pw-fill"></div></div>
+                <span class="pw-strength-text" id="agency-pw-text"></span>
+              </div>
+              <span class="field-error" id="err-agency-pw">비밀번호는 8자 이상이어야 합니다</span>
+            </div>
+            <div class="form-row" style="margin-bottom:0">
+              <label for="agency-pw2">비밀번호 확인<span class="req" aria-hidden="true">*</span></label>
+              <div class="input-wrap">
+                <input type="password" id="agency-pw2" name="password2" placeholder="비밀번호 재입력" autocomplete="new-password" required />
+                <button type="button" class="pw-toggle" onclick="togglePw('agency-pw2', this)" aria-label="비밀번호 보기/숨기기">👁</button>
+              </div>
+              <span class="field-error" id="err-agency-pw2">비밀번호가 일치하지 않습니다</span>
+            </div>
+          </div>
+
+          <!-- 약관 -->
+          <div class="terms-box">
+            <div class="terms-all">
+              <input type="checkbox" id="agency-agree-all" onchange="toggleAllTerms('agency')" />
+              <label for="agency-agree-all">전체 동의</label>
+            </div>
+            <div class="terms-items">
+              <div class="terms-item">
+                <input type="checkbox" id="agency-agree1" name="terms" class="agency-term" onchange="syncAllCheck('agency')" required />
+                <label for="agency-agree1">[필수] 이용약관 동의</label>
+                <a href="#" id="agency-terms-link">보기</a>
+              </div>
+              <div class="terms-item">
+                <input type="checkbox" id="agency-agree2" name="privacy" class="agency-term" onchange="syncAllCheck('agency')" required />
+                <label for="agency-agree2">[필수] 개인정보 처리방침 동의</label>
+                <a href="#" id="agency-privacy-link">보기</a>
+              </div>
+              <div class="terms-item">
+                <input type="checkbox" id="agency-agree3" class="agency-term" onchange="syncAllCheck('agency')" />
+                <label for="agency-agree3">[선택] 마케팅 정보 수신 동의</label>
+              </div>
+            </div>
+            <span class="field-error" id="err-agency-terms" style="margin-top:10px">필수 약관에 동의해주세요</span>
+          </div>
+
+          <!-- TODO: 백엔드 연동 — fetch('/api/register/agency', { method:'POST', body: formData }) -->
+          <button type="submit" class="btn-submit" id="agency-submit-btn">
+            🏢 지사로 가입하기
+          </button>
+          <p class="form-submit-note">
+            가입하면 <a href="#">이용약관</a> 및 <a href="#">개인정보처리방침</a>에 동의하는 것으로 간주됩니다
+          </p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ======= STEP 3: 완료 ======= -->
+    <section class="step-view" id="step-done" aria-labelledby="done-title">
+      <div class="s3-wrap">
+        <div class="s3-icon-wrap" aria-hidden="true">
+          <svg class="s3-icon" viewBox="0 0 40 40">
+            <polyline class="s3-check" points="8 21 16.5 30 32 11"/>
+          </svg>
+        </div>
+        <h1 class="s3-title" id="done-title">가입 완료!</h1>
+        <p class="s3-desc" id="done-desc">
+          <!-- JS가 가입 유형에 따라 내용을 채움 -->
+        </p>
+        <div class="s3-actions">
+          <a href="index.html" class="btn-home" id="done-home-btn">홈으로 돌아가기</a>
+          <a href="login.html" class="btn-login-after" id="done-login-btn">로그인하기</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 페이지 하단 -->
+  <footer class="page-footer" role="contentinfo">
+    <p>&copy; 2025 용병 &nbsp;·&nbsp; <a href="#">이용약관</a> &nbsp;·&nbsp; <a href="#">개인정보처리방침</a></p>
+  </footer>
+
+  <script>
+    /* ============================================================
+       상태 관리
+    ============================================================ */
+    let currentType = null; // 'rider' | 'agency'
+
+    /* ============================================================
+       단계 전환
+    ============================================================ */
+    const steps = {
+      type:   document.getElementById('step-type'),
+      rider:  document.getElementById('step-rider'),
+      agency: document.getElementById('step-agency'),
+      done:   document.getElementById('step-done'),
+    };
+
+    function showStep(name) {
+      Object.values(steps).forEach(el => el.classList.remove('active'));
+      steps[name].classList.add('active');
+      // 스크롤 상단
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // 접근성 포커스
+      const focusTarget = steps[name].querySelector('h1, button');
+      if (focusTarget) setTimeout(() => focusTarget.focus({ preventScroll: true }), 50);
+    }
+
+    function selectType(type) {
+      currentType = type;
+      showStep(type);
+    }
+
+    function goBack() {
+      currentType = null;
+      showStep('type');
+    }
+
+    /* ============================================================
+       URL 파라미터 처리 — ?type=rider|agency, ?plan=xxx
+    ============================================================ */
+    (function parseQuery() {
+      const params = new URLSearchParams(window.location.search);
+      const type = params.get('type');
+      if (type === 'rider' || type === 'agency') {
+        currentType = type;
+        showStep(type);
+      } else {
+        showStep('type');
+      }
+    })();
+
+    /* ============================================================
+       NAV — 모바일 토글
+    ============================================================ */
+    const navToggle  = document.getElementById('nav-toggle');
+    const mobileNav  = document.getElementById('nav-mobile');
+    navToggle.addEventListener('click', () => {
+      const open = mobileNav.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+    mobileNav.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        mobileNav.classList.remove('open');
+        document.body.style.overflow = '';
+        navToggle.setAttribute('aria-expanded', false);
+      });
+    });
+
+    /* ============================================================
+       2단계 계층형 지역 선택 UI
+    ============================================================ */
+
+    // ── 시/도 → 구/군 데이터 ──
+    const REGION_DATA = {
+      '서울': ['강남구','강동구','강북구','강서구','관악구','광진구','구로구','금천구',
+               '노원구','도봉구','동대문구','동작구','마포구','서대문구','서초구',
+               '성동구','성북구','송파구','양천구','영등포구','용산구','은평구',
+               '종로구','중구','중랑구'],
+      '경기': ['수원시','성남시','의정부시','안양시','부천시','광명시','평택시','동두천시',
+               '안산시','고양시','과천시','구리시','남양주시','오산시','시흥시','군포시',
+               '의왕시','하남시','용인시','파주시','이천시','안성시','김포시','화성시',
+               '광주시','양주시','포천시','여주시','연천군','가평군','양평군'],
+      '인천': ['중구','동구','미추홀구','연수구','남동구','부평구','계양구','서구','강화군','옹진군'],
+      '부산': ['중구','서구','동구','영도구','부산진구','동래구','남구','북구',
+               '해운대구','사하구','금정구','강서구','연제구','수영구','사상구','기장군'],
+      '대구': ['중구','동구','서구','남구','북구','수성구','달서구','달성군','군위군'],
+      '대전': ['동구','중구','서구','유성구','대덕구'],
+      '광주': ['동구','서구','남구','북구','광산구'],
+      '울산': ['중구','남구','동구','북구','울주군'],
+      '기타': ['세종시','제주시','서귀포시','춘천시','원주시','강릉시','청주시','충주시',
+               '전주시','익산시','목포시','여수시','순천시','포항시','경주시','구미시',
+               '창원시','진주시','김해시'],
+    };
+
+    // ── 상태 ──
+    let activeSido   = null;                     // 현재 열린 시/도
+    const selectedGu = new Map();                // Map<"시/도 구/군", true>
+
+    // ── DOM 참조 ──
+    const sidoChipsEl  = document.getElementById('sido-chips');
+    const guPanelEl    = document.getElementById('gu-panel');
+    const guChipsEl    = document.getElementById('gu-chips');
+    const selectedTagsEl  = document.getElementById('selected-tags');
+    const noRegionHint    = document.getElementById('no-region-hint');
+    const hiddenRegions   = document.getElementById('rider-regions-hidden');
+
+    // ── 시/도 칩 렌더 ──
+    Object.keys(REGION_DATA).forEach(sido => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'sido-chip';
+      btn.dataset.sido = sido;
+      btn.setAttribute('aria-expanded', 'false');
+      btn.innerHTML = sido + ' <span class="sido-arrow" aria-hidden="true">▾</span>';
+      btn.addEventListener('click', () => onSidoClick(sido, btn));
+      sidoChipsEl.appendChild(btn);
+    });
+
+    function onSidoClick(sido, btn) {
+      if (activeSido === sido) {
+        // 같은 시/도 → 닫기
+        closeGuPanel();
+        activeSido = null;
+        btn.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        // 다른 시/도 열기 → 이전 비활성화
+        sidoChipsEl.querySelectorAll('.sido-chip').forEach(c => {
+          c.classList.remove('active');
+          c.setAttribute('aria-expanded', 'false');
+        });
+        activeSido = sido;
+        btn.classList.add('active');
+        btn.setAttribute('aria-expanded', 'true');
+        renderGuChips(sido);
+        openGuPanel();
+      }
+    }
+
+    function openGuPanel()  { guPanelEl.classList.add('open'); }
+    function closeGuPanel() { guPanelEl.classList.remove('open'); }
+
+    // ── 구/군 칩 렌더 ──
+    function renderGuChips(sido) {
+      guChipsEl.innerHTML = '';
+      const districts = REGION_DATA[sido];
+
+      // "○○ 전체" 칩
+      const allBtn = document.createElement('button');
+      allBtn.type = 'button';
+      allBtn.className = 'gu-chip gu-chip-all';
+      allBtn.textContent = sido + ' 전체';
+      const allSelected = districts.every(d => selectedGu.has(sido + ' ' + d));
+      if (allSelected) allBtn.classList.add('selected');
+      allBtn.addEventListener('click', () => toggleAllGu(sido, allBtn));
+      guChipsEl.appendChild(allBtn);
+
+      // 구분선
+      const div = document.createElement('div');
+      div.className = 'gu-divider';
+      guChipsEl.appendChild(div);
+
+      // 개별 구/군 칩
+      districts.forEach(gu => {
+        const key = sido + ' ' + gu;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'gu-chip';
+        btn.dataset.key = key;
+        btn.textContent = gu;
+        btn.setAttribute('aria-pressed', selectedGu.has(key) ? 'true' : 'false');
+        if (selectedGu.has(key)) btn.classList.add('selected');
+        btn.addEventListener('click', () => toggleGuChip(key, btn, sido, allBtn));
+        guChipsEl.appendChild(btn);
+      });
+    }
+
+    function toggleGuChip(key, btn, sido, allBtn) {
+      if (selectedGu.has(key)) {
+        selectedGu.delete(key);
+        btn.classList.remove('selected');
+        btn.setAttribute('aria-pressed', 'false');
+      } else {
+        selectedGu.set(key, true);
+        btn.classList.add('selected');
+        btn.setAttribute('aria-pressed', 'true');
+      }
+      // 전체 칩 상태 동기화
+      const districts = REGION_DATA[sido];
+      const allSel = districts.every(d => selectedGu.has(sido + ' ' + d));
+      allBtn.classList.toggle('selected', allSel);
+      renderTags();
+    }
+
+    function toggleAllGu(sido, allBtn) {
+      const districts = REGION_DATA[sido];
+      const allSel = districts.every(d => selectedGu.has(sido + ' ' + d));
+      if (allSel) {
+        // 전체 해제
+        districts.forEach(d => selectedGu.delete(sido + ' ' + d));
+        allBtn.classList.remove('selected');
+      } else {
+        // 전체 선택
+        districts.forEach(d => selectedGu.set(sido + ' ' + d, true));
+        allBtn.classList.add('selected');
+      }
+      // 구/군 칩 시각 갱신
+      guChipsEl.querySelectorAll('.gu-chip:not(.gu-chip-all)').forEach(btn => {
+        const key = btn.dataset.key;
+        const sel = selectedGu.has(key);
+        btn.classList.toggle('selected', sel);
+        btn.setAttribute('aria-pressed', sel ? 'true' : 'false');
+      });
+      renderTags();
+    }
+
+    // ── 태그 렌더 ──
+    function renderTags() {
+      selectedTagsEl.innerHTML = '';
+      hiddenRegions.value = [...selectedGu.keys()].join(',');
+
+      if (selectedGu.size === 0) {
+        noRegionHint.style.display = '';
+        return;
+      }
+      noRegionHint.style.display = 'none';
+
+      selectedGu.forEach((_, key) => {
+        const tag = document.createElement('span');
+        tag.className = 'selected-tag';
+        tag.innerHTML = key +
+          '<button type="button" class="tag-remove" aria-label="' + key + ' 제거">×</button>';
+        tag.querySelector('.tag-remove').addEventListener('click', () => removeTag(key));
+        selectedTagsEl.appendChild(tag);
+      });
+    }
+
+    function removeTag(key) {
+      selectedGu.delete(key);
+      // 현재 열린 패널에서 해당 칩 비활성화
+      const chipEl = guChipsEl.querySelector('[data-key="' + key + '"]');
+      if (chipEl) {
+        chipEl.classList.remove('selected');
+        chipEl.setAttribute('aria-pressed', 'false');
+        // 전체 칩 동기화
+        const sido = key.split(' ')[0];
+        const allBtn = guChipsEl.querySelector('.gu-chip-all');
+        if (allBtn) {
+          const allSel = REGION_DATA[sido].every(d => selectedGu.has(sido + ' ' + d));
+          allBtn.classList.toggle('selected', allSel);
+        }
+      }
+      renderTags();
+    }
+
+    // 하위 호환 — form 제출 시 사용
+    function getSelectedRegions() {
+      return [...selectedGu.keys()];
+    }
+
+    // 초기 렌더
+    renderTags();
+
+    /* ============================================================
+       지사 — 멀티 오픈 운영 지역 선택 UI
+    ============================================================ */
+
+    // ── 지사 상태 ──
+    var agencyOpenSido   = new Set();
+    var agencySelectedGu = new Map();
+
+    // ── 지사 DOM 참조 ──
+    var agencySidoEl     = document.getElementById('agency-sido-chips');
+    var agencyGuPanelsEl = document.getElementById('agency-gu-panels');
+    var agencyTagsEl     = document.getElementById('agency-selected-tags');
+    var agencyNoHint     = document.getElementById('agency-no-region-hint');
+    var agencyHidden     = document.getElementById('agency-regions-hidden');
+    var agencyPanelMap   = {};
+
+    Object.keys(REGION_DATA).forEach(function(sido) {
+      var sidoBtn = document.createElement('button');
+      sidoBtn.type = 'button';
+      sidoBtn.className = 'sido-chip';
+      sidoBtn.dataset.sido = sido;
+      sidoBtn.setAttribute('aria-expanded', 'false');
+      sidoBtn.innerHTML = sido + ' <span class="sido-arrow" aria-hidden="true">&#9660;</span>';
+      sidoBtn.addEventListener('click', function() { agencyOnSidoClick(sido, sidoBtn); });
+      agencySidoEl.appendChild(sidoBtn);
+
+      var panel = document.createElement('div');
+      panel.className = 'gu-panel';
+
+      var inner = document.createElement('div');
+      inner.className = 'gu-panel-inner';
+
+      var hdr = document.createElement('div');
+      hdr.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;';
+
+      var countBadge = document.createElement('span');
+      countBadge.style.cssText = 'font-size:0.75rem;color:#888;font-weight:600;flex:1;';
+      countBadge.textContent = sido + ' (0개 선택됨)';
+
+      var allBtn = document.createElement('button');
+      allBtn.type = 'button';
+      allBtn.className = 'gu-chip gu-chip-all';
+      allBtn.textContent = '전체 선택';
+      allBtn.addEventListener('click', function() { agencyToggleAll(sido, allBtn, countBadge); });
+
+      hdr.appendChild(countBadge);
+      hdr.appendChild(allBtn);
+
+      var divLine = document.createElement('div');
+      divLine.className = 'gu-divider';
+
+      var guWrap = document.createElement('div');
+      guWrap.className = 'gu-chips';
+
+      REGION_DATA[sido].forEach(function(gu) {
+        var key = sido + '-' + gu;
+        var chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'gu-chip';
+        chip.dataset.key = key;
+        chip.textContent = gu;
+        chip.setAttribute('aria-pressed', 'false');
+        chip.addEventListener('click', function() { agencyToggleGu(key, chip, sido, allBtn, countBadge); });
+        guWrap.appendChild(chip);
+      });
+
+      inner.appendChild(hdr);
+      inner.appendChild(divLine);
+      inner.appendChild(guWrap);
+      panel.appendChild(inner);
+      agencyGuPanelsEl.appendChild(panel);
+      agencyPanelMap[sido] = { panel: panel, guChipsWrap: guWrap, allBtn: allBtn, countBadge: countBadge, sidoBtn: sidoBtn };
+    });
+
+    function agencyOnSidoClick(sido, btn) {
+      var info = agencyPanelMap[sido];
+      if (agencyOpenSido.has(sido)) {
+        agencyOpenSido.delete(sido);
+        info.panel.classList.remove('open');
+        btn.classList.remove('active');
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        agencyOpenSido.add(sido);
+        info.panel.classList.add('open');
+        btn.classList.add('active');
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    }
+
+    function agencyToggleGu(key, chip, sido, allBtn, countBadge) {
+      if (agencySelectedGu.has(key)) {
+        agencySelectedGu.delete(key);
+        chip.classList.remove('selected');
+        chip.setAttribute('aria-pressed', 'false');
+      } else {
+        agencySelectedGu.set(key, true);
+        chip.classList.add('selected');
+        chip.setAttribute('aria-pressed', 'true');
+      }
+      agencySyncState(sido, allBtn, countBadge);
+      agencyRenderTags();
+    }
+
+    function agencyToggleAll(sido, allBtn, countBadge) {
+      var districts = REGION_DATA[sido];
+      var allSel = districts.every(function(d) { return agencySelectedGu.has(sido + '-' + d); });
+      var guWrap = agencyPanelMap[sido].guChipsWrap;
+      districts.forEach(function(d) {
+        var key = sido + '-' + d;
+        var chip = guWrap.querySelector('[data-key="' + key + '"]');
+        if (allSel) {
+          agencySelectedGu.delete(key);
+          if (chip) { chip.classList.remove('selected'); chip.setAttribute('aria-pressed', 'false'); }
+        } else {
+          agencySelectedGu.set(key, true);
+          if (chip) { chip.classList.add('selected'); chip.setAttribute('aria-pressed', 'true'); }
+        }
+      });
+      agencySyncState(sido, allBtn, countBadge);
+      agencyRenderTags();
+    }
+
+    function agencySyncState(sido, allBtn, countBadge) {
+      var districts = REGION_DATA[sido];
+      var selCount  = districts.filter(function(d) { return agencySelectedGu.has(sido + '-' + d); }).length;
+      var allSel    = selCount === districts.length;
+      allBtn.classList.toggle('selected', allSel);
+      allBtn.textContent = allSel ? '전체 해제' : '전체 선택';
+      countBadge.textContent = sido + ' (' + selCount + '개 선택됨)';
+      countBadge.style.color = selCount > 0 ? '#FF5252' : '#888';
+      var sb    = agencyPanelMap[sido].sidoBtn;
+      var arrow = sb.querySelector('.sido-arrow');
+      sb.textContent = sido + (selCount > 0 ? ' (' + selCount + ')' : '') + ' ';
+      if (arrow) { sb.appendChild(arrow); }
+      else { var a = document.createElement('span'); a.className = 'sido-arrow'; a.setAttribute('aria-hidden','true'); a.innerHTML = '&#9660;'; sb.appendChild(a); }
+    }
+
+    function agencyRenderTags() {
+      agencyTagsEl.innerHTML = '';
+      agencyHidden.value = Array.from(agencySelectedGu.keys()).join(',');
+      if (agencySelectedGu.size === 0) { agencyNoHint.style.display = ''; return; }
+      agencyNoHint.style.display = 'none';
+      showErr('err-agency-region', false);
+      agencySelectedGu.forEach(function(_, key) {
+        var parts = key.split('-');
+        var label = parts[0] + ' · ' + parts[1];
+        var tag   = document.createElement('span');
+        tag.className = 'selected-tag';
+        tag.innerHTML = label + '<button type="button" class="tag-remove" aria-label="' + label + ' 제거">×</button>';
+        tag.querySelector('.tag-remove').addEventListener('click', function() { agencyRemoveTag(key); });
+        agencyTagsEl.appendChild(tag);
+      });
+    }
+
+    function agencyRemoveTag(key) {
+      agencySelectedGu.delete(key);
+      var sido = key.split('-')[0];
+      var info = agencyPanelMap[sido];
+      if (info) {
+        var chip = info.guChipsWrap.querySelector('[data-key="' + key + '"]');
+        if (chip) { chip.classList.remove('selected'); chip.setAttribute('aria-pressed','false'); }
+        agencySyncState(sido, info.allBtn, info.countBadge);
+      }
+      agencyRenderTags();
+    }
+
+    agencyRenderTags();
+
+
+
+    /* ============================================================
+       비밀번호 보기/숨기기
+    ============================================================ */
+    function togglePw(inputId, btn) {
+      const inp = document.getElementById(inputId);
+      const isText = inp.type === 'text';
+      inp.type = isText ? 'password' : 'text';
+      btn.textContent = isText ? '👁' : '🙈';
+      btn.setAttribute('aria-label', isText ? '비밀번호 보기' : '비밀번호 숨기기');
+    }
+
+    /* ============================================================
+       비밀번호 강도 체크
+    ============================================================ */
+    function checkPwStrength(input, barId) {
+      const pw = input.value;
+      const strengthEl = document.getElementById(barId);
+      const fillId  = barId.replace('strength', 'fill');
+      const textId  = barId.replace('strength', 'text');
+      const fill    = document.getElementById(fillId);
+      const textEl  = document.getElementById(textId);
+
+      if (!pw) { strengthEl.classList.remove('show'); return; }
+      strengthEl.classList.add('show');
+
+      let score = 0;
+      if (pw.length >= 8)                     score++;
+      if (pw.length >= 12)                    score++;
+      if (/[A-Z]/.test(pw))                   score++;
+      if (/[0-9]/.test(pw))                   score++;
+      if (/[^A-Za-z0-9]/.test(pw))            score++;
+
+      const levels = [
+        { pct: '20%',  color: '#E53935', label: '매우 약함' },
+        { pct: '40%',  color: '#f97316', label: '약함' },
+        { pct: '60%',  color: '#facc15', label: '보통' },
+        { pct: '80%',  color: '#84cc16', label: '강함' },
+        { pct: '100%', color: '#22c55e', label: '매우 강함' },
+      ];
+      const lvl = levels[Math.min(score - 1, 4)] || levels[0];
+      fill.style.width     = lvl.pct;
+      fill.style.background = lvl.color;
+      textEl.textContent    = lvl.label;
+      textEl.style.color    = lvl.color;
+    }
+
+    /* ============================================================
+       약관 체크박스 — 전체/개별 연동
+    ============================================================ */
+    function toggleAllTerms(prefix) {
+      const allCheck = document.getElementById(`${prefix}-agree-all`);
+      document.querySelectorAll(`.${prefix}-term`).forEach(cb => {
+        cb.checked = allCheck.checked;
+      });
+    }
+
+    function syncAllCheck(prefix) {
+      const terms  = document.querySelectorAll(`.${prefix}-term`);
+      const allEl  = document.getElementById(`${prefix}-agree-all`);
+      allEl.checked = [...terms].every(cb => cb.checked);
+      allEl.indeterminate = !allEl.checked && [...terms].some(cb => cb.checked);
+    }
+
+    /* ============================================================
+       유효성 검사 헬퍼
+    ============================================================ */
+    function showErr(id, show) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.toggle('show', show);
+    }
+    function setInputError(id, isError) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.classList.toggle('error', isError);
+    }
+    function clearAllErrors(prefix) {
+      document.querySelectorAll(`[id^="err-${prefix}"]`).forEach(el => el.classList.remove('show'));
+      document.querySelectorAll(`[id^="${prefix}-"]`).forEach(el => {
+        if (el.tagName === 'INPUT') el.classList.remove('error');
+      });
+    }
+
+    function validateEmail(v) { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v); }
+    function validatePhone(v) { return /^[0-9\-+\s]{7,15}$/.test(v.trim()); }
+    function validateBiz(v)   { return /^[0-9\-]{9,12}$/.test(v.trim()); }
+
+    /* ============================================================
+       라이더 폼 제출
+    ============================================================ */
+    document.getElementById('form-rider').addEventListener('submit', function(e) {
+      e.preventDefault();
+      clearAllErrors('rider');
+      let valid = true;
+
+      const name  = document.getElementById('rider-name').value.trim();
+      const phone = document.getElementById('rider-phone').value.trim();
+      const email = document.getElementById('rider-email').value.trim();
+      const pw    = document.getElementById('rider-pw').value;
+      const pw2   = document.getElementById('rider-pw2').value;
+      const exp   = document.querySelector('input[name="experience"]:checked');
+      const terms1 = document.getElementById('rider-agree1').checked;
+      const terms2 = document.getElementById('rider-agree2').checked;
+
+      if (!name)              { showErr('err-rider-name', true);  setInputError('rider-name', true);  valid=false; }
+      if (!validatePhone(phone)) { showErr('err-rider-phone', true); setInputError('rider-phone', true); valid=false; }
+      if (!exp) { document.getElementById('err-rider-exp').textContent='경력을 선택해주세요'; showErr('err-rider-exp', true); valid=false; }
+      if (!validateEmail(email)) { showErr('err-rider-email', true); setInputError('rider-email', true); valid=false; }
+      if (pw.length < 8)      { showErr('err-rider-pw',   true);  setInputError('rider-pw',   true);  valid=false; }
+      if (pw !== pw2)         { showErr('err-rider-pw2',  true);  setInputError('rider-pw2',  true);  valid=false; }
+      if (!terms1 || !terms2) { showErr('err-rider-terms', true); valid=false; }
+
+      if (!valid) {
+        // 첫 번째 에러 항목으로 스크롤
+        const firstErr = document.querySelector('.field-error.show');
+        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      // TODO: 백엔드 연동 — 아래 주석 해제 후 서버 URL 교체
+      /*
+      const btn = document.getElementById('rider-submit-btn');
+      btn.disabled = true;
+      btn.textContent = '처리 중...';
+      const data = {
+        name, phone, email, password: pw,
+        experience: exp.value,
+        regions: getSelectedRegions(),
+        marketing: document.getElementById('rider-agree3').checked,
+      };
+      fetch('/api/register/rider', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res.ok) showDone('rider', name);
+        else { alert(res.message || '가입 중 오류가 발생했습니다.'); btn.disabled=false; btn.textContent='⚡ 용병 라이더로 가입하기'; }
+      })
+      .catch(() => { alert('서버 연결에 실패했습니다.'); btn.disabled=false; btn.textContent='⚡ 용병 라이더로 가입하기'; });
+      */
+
+      // MVP: 백엔드 없이 완료 화면 이동
+      showDone('rider', name);
+    });
+
+    /* ============================================================
+       지사 폼 제출
+    ============================================================ */
+    document.getElementById('form-agency').addEventListener('submit', function(e) {
+      e.preventDefault();
+      clearAllErrors('agency');
+      let valid = true;
+
+      const agencyName = document.getElementById('agency-name').value.trim();
+      const biz        = document.getElementById('agency-biz').value.trim();
+      const manager    = document.getElementById('agency-manager').value.trim();
+      const phone      = document.getElementById('agency-phone').value.trim();
+      const email      = document.getElementById('agency-email').value.trim();
+      const pw         = document.getElementById('agency-pw').value;
+      const pw2        = document.getElementById('agency-pw2').value;
+      const terms1     = document.getElementById('agency-agree1').checked;
+      const terms2     = document.getElementById('agency-agree2').checked;
+
+      if (!agencyName)         { showErr('err-agency-name',    true); setInputError('agency-name',    true); valid=false; }
+      if (!validateBiz(biz))   { showErr('err-agency-biz',     true); setInputError('agency-biz',     true); valid=false; }
+      if (agencySelectedGu.size === 0) { showErr('err-agency-region', true); valid=false; }
+      if (!manager)            { showErr('err-agency-manager',  true); setInputError('agency-manager', true); valid=false; }
+      if (!validatePhone(phone)){ showErr('err-agency-phone',   true); setInputError('agency-phone',   true); valid=false; }
+      if (!validateEmail(email)){ showErr('err-agency-email',   true); setInputError('agency-email',   true); valid=false; }
+      if (pw.length < 8)       { showErr('err-agency-pw',      true); setInputError('agency-pw',      true); valid=false; }
+      if (pw !== pw2)          { showErr('err-agency-pw2',     true); setInputError('agency-pw2',     true); valid=false; }
+      if (!terms1 || !terms2)  { showErr('err-agency-terms',   true); valid=false; }
+
+      if (!valid) {
+        const firstErr = document.querySelector('.field-error.show');
+        if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      // TODO: 백엔드 연동 — 아래 주석 해제 후 서버 URL 교체
+      /*
+      const btn = document.getElementById('agency-submit-btn');
+      btn.disabled = true;
+      btn.textContent = '처리 중...';
+      const data = { agency_name: agencyName, business_number: biz, manager_name: manager, phone, email, password: pw,
+                     marketing: document.getElementById('agency-agree3').checked };
+      fetch('/api/register/agency', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      })
+      .then(r => r.json())
+      .then(res => {
+        if (res.ok) showDone('agency', agencyName);
+        else { alert(res.message || '가입 중 오류가 발생했습니다.'); btn.disabled=false; btn.textContent='🏢 지사로 가입하기'; }
+      })
+      .catch(() => { alert('서버 연결에 실패했습니다.'); btn.disabled=false; btn.textContent='🏢 지사로 가입하기'; });
+      */
+
+      // MVP: 백엔드 없이 완료 화면 이동
+      showDone('agency', agencyName);
+    });
+
+    /* ============================================================
+       완료 화면 표시
+    ============================================================ */
+    function showDone(type, name) {
+      const descEl = document.getElementById('done-desc');
+      if (type === 'rider') {
+        descEl.innerHTML = `<strong>${name}</strong>님, 용병 라이더 가입이 완료되었습니다!<br>
+          로그인 후 긴급 요청 목록에서 원하는 출동 요청을 확인하세요.`;
+      } else {
+        descEl.innerHTML = `<strong>${name}</strong> 가입이 완료되었습니다!<br>
+          로그인 후 긴급 라이더 요청을 등록하고 세트를 지키세요.`;
+      }
+      showStep('done');
+      // 체크 애니메이션 재실행
+      const check = document.querySelector('.s3-check');
+      check.style.animation = 'none';
+      check.offsetHeight; // reflow
+      check.style.animation = '';
+    }
+
+    /* ============================================================
+       사업자등록번호 자동 하이픈
+    ============================================================ */
+    document.getElementById('agency-biz').addEventListener('input', function() {
+      let v = this.value.replace(/\D/g, '');
+      if (v.length > 3 && v.length <= 5) v = v.slice(0,3) + '-' + v.slice(3);
+      else if (v.length > 5) v = v.slice(0,3) + '-' + v.slice(3,5) + '-' + v.slice(5,10);
+      this.value = v;
+    });
+
+    /* ============================================================
+       연락처 자동 하이픈
+    ============================================================ */
+    function formatPhone(input) {
+      input.addEventListener('input', function() {
+        let v = this.value.replace(/\D/g, '');
+        if (v.length <= 3) this.value = v;
+        else if (v.length <= 7) this.value = v.slice(0,3) + '-' + v.slice(3);
+        else this.value = v.slice(0,3) + '-' + v.slice(3,7) + '-' + v.slice(7,11);
+      });
+    }
+    formatPhone(document.getElementById('rider-phone'));
+    formatPhone(document.getElementById('agency-phone'));
+  </script>
+</body>
+</html>
