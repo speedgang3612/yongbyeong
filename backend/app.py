@@ -1,7 +1,10 @@
 import sqlite3
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 
 app = Flask(__name__)
+# 화면(다른 포트)에서 이 API를 호출할 수 있게 허용 (CORS)
+CORS(app)
 
 # DB 파일 이름 (이 파일 하나가 곧 데이터베이스다. 서버를 껐다 켜도 데이터가 남는다.)
 DB = "users.db"
