@@ -1,9 +1,32 @@
+import sqlite3
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-# 임시 저장소(메모리) — 서버를 끄면 사라진다. 진짜 DB 저장은 다음 단계에서 붙인다.
-users = []
+# DB 파일 이름 (이 파일 하나가 곧 데이터베이스다. 서버를 껐다 켜도 데이터가 남는다.)
+DB = "users.db"
+
+
+def init_db():
+    """서버 시작 시 users 테이블이 없으면 만든다."""
+    con = sqlite3.connect(DB)
+    con.execute(
+        """
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            user_type TEXT NOT NULL,
+            name TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            phone TEXT,
+            regions TEXT,
+            extra TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+        """
+    )
+    con.commit()
+    con.close()
 
 
 @app.route("/")
@@ -23,24 +46,46 @@ def register():
     if not user_type or not name or not email or not password:
         return jsonify({"ok": False, "error": "필수 항목이 비어 있습니다."}), 400
 
-    # 이메일 중복 확인
-    if any(u.get("email") == email for u in users):
+    phone = data.get("phone", "")
+    regions = data.get("regions", "")
+    extra = data.get("extra", "")
+
+    con = sqlite3.connect(DB)
+    try:
+        # ? 자리표시자로 값을 따로 전달 → SQL 인젝션 방지 (보안)
+        con.execute(
+            "INSERT INTO users (user_type, name, email, password, phone, regions, extra) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (user_type, name, email, password, phone, regions, extra),
+        )
+        con.commit()
+    except sqlite3.IntegrityError:
+        # 이메일 UNIQUE 위반 = 이미 가입된 이메일
+        con.close()
         return jsonify({"ok": False, "error": "이미 가입된 이메일입니다."}), 409
 
-    # 저장 (받은 값 그대로 보관)
-    users.append(dict(data))
+    total = con.execute("SELECT COUNT(*) FROM users").fetchone()[0]
+    con.close()
 
     # 응답에는 비밀번호를 빼고 돌려준다 (보안)
     safe = {k: v for k, v in data.items() if k != "password"}
-    return jsonify({"ok": True, "user": safe, "total": len(users)})
+    return jsonify({"ok": True, "user": safe, "total": total})
 
 
 @app.route("/api/users")
 def list_users():
-    # 확인용: 가입된 사용자 목록 (비밀번호 제외)
-    safe_list = [{k: v for k, v in u.items() if k != "password"} for u in users]
+    con = sqlite3.connect(DB)
+    con.row_factory = sqlite3.Row
+    rows = con.execute(
+        "SELECT id, user_type, name, email, phone, regions, extra, created_at "
+        "FROM users ORDER BY id DESC"
+    ).fetchall()
+    con.close()
+    # 비밀번호는 애초에 SELECT에서 빼서 가져온다 (보안)
+    safe_list = [dict(r) for r in rows]
     return jsonify({"total": len(safe_list), "users": safe_list})
 
 
 if __name__ == "__main__":
+    init_db()
     app.run(debug=True, port=5000)

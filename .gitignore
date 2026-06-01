@@ -4,3 +4,7 @@ __pycache__/
 *.pyc
 *.pyo
 .DS_Store
+
+# 데이터베이스 파일 (실제 가입자 정보가 담기므로 깃에 올리지 않음)
+*.db
+*.sqlite3
