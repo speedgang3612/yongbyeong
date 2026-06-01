@@ -1,1 +1,1190 @@
-<!-- TODO: pages/agency/request-new.html — agent.md directives 참고하여 구현 -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="용병 — 플러스 지사의 세트 위기를 구하는 긴급 라이더 요청 등록 페이지입니다." />
+  <title>용병 — 긴급 라이더 요청 등록</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ==============================================
+       DESIGN TOKENS (index.html에서 동일하게 상속)
+    ============================================== */
+    :root {
+      --bg-0:       #080808;
+      --bg-1:       #0f0f0f;
+      --bg-2:       #1a1a1a;
+      --bg-3:       #222222;
+      --border:     rgba(255,255,255,0.08);
+      --border-red: rgba(229,57,53,0.5);
+
+      --red:        #E53935;
+      --red-hover:  #c62828;
+      --red-glow:   rgba(229,57,53,0.15);
+
+      --white:      #ffffff;
+      --gray-1:     #cccccc;
+      --gray-2:     #888888;
+      --gray-3:     #444444;
+
+      --font:       'Outfit', sans-serif;
+      --radius-sm:  8px;
+      --radius-md:  14px;
+      --radius-lg:  22px;
+      --shadow-card: 0 4px 24px rgba(0,0,0,0.45);
+      --shadow-red:  0 0 32px rgba(229,57,53,0.2);
+
+      --transition: 0.22s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    /* ==============================================
+       RESET & BASE
+    ============================================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-0);
+      color: var(--white);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: var(--font); cursor: pointer; border: none; outline: none; }
+
+    /* ==============================================
+       UTILITY
+    ============================================== */
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 14px;
+      border-radius: 100px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+    .badge-red {
+      background: var(--red-glow);
+      border: 1px solid var(--border-red);
+      color: #ff6b6b;
+    }
+    .section-tag {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 16px;
+    }
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: var(--red);
+      color: var(--white);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: background var(--transition), transform var(--transition), box-shadow var(--transition);
+    }
+    .btn-primary:hover {
+      background: var(--red-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-red);
+    }
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 28px;
+      background: transparent;
+      color: var(--white);
+      border: 1.5px solid rgba(255,255,255,0.3);
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: border-color var(--transition), background var(--transition), transform var(--transition);
+    }
+    .btn-outline:hover {
+      border-color: var(--white);
+      background: rgba(255,255,255,0.06);
+      transform: translateY(-2px);
+    }
+
+    /* ==============================================
+       NAV
+    ============================================== */
+    #nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 0 24px;
+      height: 68px;
+      display: flex;
+      align-items: center;
+      background: rgba(8,8,8,0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      transition: background var(--transition);
+    }
+    .nav-inner {
+      max-width: 1160px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      font-size: 1.35rem;
+      font-weight: 900;
+      letter-spacing: -0.01em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .nav-logo .logo-dot {
+      width: 8px; height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      display: inline-block;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(1.4); }
+    }
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-menu a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--gray-2);
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav-menu a:hover,
+    .nav-menu a.active {
+      color: var(--white);
+    }
+    .nav-menu a.active::after {
+      content: '';
+      position: absolute;
+      left: 0; right: 0; bottom: -4px;
+      height: 2px;
+      background: var(--red);
+      border-radius: 2px;
+    }
+    .nav-cta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .nav-cta .btn-ghost {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--gray-1);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition), color var(--transition);
+    }
+    .nav-cta .btn-ghost:hover { background: var(--bg-3); color: var(--white); }
+    .nav-cta .btn-nav-primary {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--white);
+      background: var(--red);
+      padding: 9px 20px;
+      border-radius: var(--radius-sm);
+      transition: background var(--transition);
+    }
+    .nav-cta .btn-nav-primary:hover { background: var(--red-hover); }
+
+    /* Hamburger */
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 6px;
+    }
+    .nav-toggle span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--white);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .nav-mobile {
+      display: none;
+      position: fixed;
+      top: 68px; left: 0; right: 0; bottom: 0;
+      background: rgba(8,8,8,0.97);
+      backdrop-filter: blur(16px);
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 32px;
+      z-index: 99;
+    }
+    .nav-mobile.open { display: flex; }
+    .nav-mobile a {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--gray-2);
+      transition: color var(--transition);
+    }
+    .nav-mobile a:hover { color: var(--white); }
+
+    /* ==============================================
+       MAIN LAYOUT & HEADER
+    ============================================== */
+    main {
+      padding-top: 120px;
+      min-height: calc(100vh - 280px);
+    }
+    .page-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    .page-header h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .page-header p {
+      color: var(--gray-2);
+      font-size: 1.05rem;
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    /* ==============================================
+       FORM CARD STYLE
+    ============================================== */
+    .form-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 48px;
+      max-width: 720px;
+      margin: 0 auto 120px;
+      box-shadow: var(--shadow-card);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .form-group {
+      margin-bottom: 28px;
+      position: relative;
+    }
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .form-label span {
+      color: var(--red);
+      margin-left: 4px;
+    }
+    .form-input, .form-select, .form-textarea {
+      width: 100%;
+      background: var(--bg-1);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 14px 18px;
+      color: var(--white);
+      font-family: var(--font);
+      font-size: 0.95rem;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .form-input:focus, .form-select:focus, .form-textarea:focus {
+      border-color: var(--red);
+      box-shadow: 0 0 10px rgba(229,57,53,0.15);
+      outline: none;
+    }
+    
+    /* Errors */
+    .form-group.has-error .form-input,
+    .form-group.has-error .form-select,
+    .form-group.has-error .form-textarea {
+      border-color: var(--red);
+      background: rgba(229, 57, 53, 0.03);
+    }
+    .error-msg {
+      color: #ff6b6b;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-top: 6px;
+      display: none;
+    }
+    .form-group.has-error .error-msg {
+      display: block;
+    }
+
+    /* Area Chips */
+    .area-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .area-chip {
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      color: var(--gray-1);
+      padding: 10px 18px;
+      border-radius: 100px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background var(--transition), border-color var(--transition), color var(--transition), transform var(--transition);
+      user-select: none;
+    }
+    .area-chip:hover {
+      border-color: rgba(255,255,255,0.3);
+      transform: translateY(-1px);
+    }
+    .area-chip.selected {
+      background: var(--red);
+      border-color: var(--red);
+      color: var(--white);
+      box-shadow: var(--shadow-red);
+    }
+
+    /* Custom Radio Buttons */
+    .radio-group {
+      display: flex;
+      gap: 24px;
+      margin-top: 8px;
+    }
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--gray-1);
+      user-select: none;
+    }
+    .radio-label input[type="radio"] {
+      appearance: none;
+      width: 18px; height: 18px;
+      border: 2px solid var(--gray-3);
+      border-radius: 50%;
+      outline: none;
+      transition: border-color var(--transition), background-color var(--transition);
+      position: relative;
+      background: var(--bg-1);
+    }
+    .radio-label input[type="radio"]:checked {
+      border-color: var(--red);
+    }
+    .radio-label input[type="radio"]:checked::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px; height: 10px;
+      background: var(--red);
+      border-radius: 50%;
+    }
+    .radio-label:hover input[type="radio"] {
+      border-color: var(--red-hover);
+    }
+
+    /* Input Suffix */
+    .input-with-suffix {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .input-with-suffix input {
+      padding-right: 48px;
+    }
+    .input-suffix {
+      position: absolute;
+      right: 18px;
+      font-size: 0.95rem;
+      color: var(--gray-2);
+      font-weight: 600;
+    }
+
+    /* Price Help text */
+    .price-help {
+      font-size: 0.82rem;
+      color: var(--gray-2);
+      margin-top: 8px;
+      display: block;
+      line-height: 1.4;
+    }
+
+    /* Textarea & Count */
+    .textarea-container {
+      position: relative;
+    }
+    .text-counter {
+      text-align: right;
+      font-size: 0.78rem;
+      color: var(--gray-3);
+      margin-top: 6px;
+    }
+
+    /* ==============================================
+       MODAL (성공 시 알림)
+    ============================================== */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-overlay.open {
+      display: flex;
+    }
+    .modal-content {
+      background: var(--bg-2);
+      border: 1px solid var(--border-red);
+      border-radius: var(--radius-lg);
+      padding: 40px;
+      max-width: 520px;
+      width: 100%;
+      box-shadow: var(--shadow-red);
+      animation: modalFadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+    }
+    @keyframes modalFadeIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .modal-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .modal-icon {
+      font-size: 3rem;
+      margin-bottom: 16px;
+      display: inline-block;
+    }
+    .modal-title {
+      font-size: 1.45rem;
+      font-weight: 800;
+      color: var(--white);
+    }
+    .modal-body {
+      margin-bottom: 32px;
+      background: var(--bg-1);
+      border-radius: var(--radius-sm);
+      padding: 20px;
+      border: 1px solid var(--border);
+    }
+    .summary-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+    .summary-item:last-child {
+      margin-bottom: 0;
+      border-top: 1px solid var(--border);
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    .summary-label {
+      color: var(--gray-2);
+      font-weight: 500;
+    }
+    .summary-val {
+      color: var(--white);
+      font-weight: 700;
+      text-align: right;
+      max-width: 60%;
+      word-break: break-all;
+    }
+    .summary-val.red-val {
+      color: var(--red);
+    }
+    .modal-footer {
+      display: flex;
+      gap: 12px;
+    }
+    .modal-footer button, .modal-footer a {
+      flex: 1;
+      font-size: 0.9rem;
+      padding: 12px 20px;
+    }
+
+    /* ==============================================
+       FOOTER
+    ============================================== */
+    #footer {
+      background: var(--bg-1);
+      border-top: 1px solid var(--border);
+      padding: 56px 0 36px;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    .footer-brand .nav-logo { margin-bottom: 12px; }
+    .footer-brand p {
+      font-size: 0.82rem;
+      color: var(--gray-2);
+      line-height: 1.7;
+      max-width: 280px;
+    }
+    .footer-links {
+      display: flex;
+      gap: 64px;
+    }
+    .footer-col h4 {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gray-3);
+      margin-bottom: 16px;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: 10px; }
+    .footer-col a {
+      font-size: 0.85rem;
+      color: var(--gray-2);
+      transition: color var(--transition);
+    }
+    .footer-col a:hover { color: var(--white); }
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .footer-bottom p {
+      font-size: 0.78rem;
+      color: var(--gray-3);
+    }
+    .footer-bottom-links {
+      display: flex;
+      gap: 20px;
+    }
+    .footer-bottom-links a {
+      font-size: 0.78rem;
+      color: var(--gray-3);
+      transition: color var(--transition);
+    }
+    .footer-bottom-links a:hover { color: var(--gray-2); }
+
+    /* ==============================================
+       RESPONSIVE
+    ============================================== */
+    @media (max-width: 768px) {
+      .nav-menu, .nav-cta { display: none; }
+      .nav-toggle { display: flex; }
+
+      .form-row { grid-template-columns: 1fr; gap: 0; }
+      .form-group.full-width { grid-column: span 1; }
+      .form-card { padding: 32px 24px; margin-bottom: 80px; }
+
+      .radio-group { flex-direction: column; gap: 12px; }
+
+      .footer-inner { flex-direction: column; gap: 36px; }
+      .footer-links { gap: 36px; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .footer-links { flex-direction: column; gap: 28px; }
+      .modal-content { padding: 32px 20px; }
+      .modal-footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========== NAV ========== -->
+  <header id="nav" role="banner">
+    <nav class="nav-inner" aria-label="메인 내비게이션">
+      <a href="../index.html" class="nav-logo" id="nav-logo">
+        <span class="logo-dot" aria-hidden="true"></span>
+        용병
+      </a>
+      <ul class="nav-menu" id="nav-menu">
+        <li><a href="../index.html" id="nav-home">홈</a></li>
+        <li><a href="../pricing.html" id="nav-pricing">요금제</a></li>
+        <li><a href="../register.html" id="nav-register">회원가입</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a href="../login.html" class="btn-ghost" id="nav-login">로그인</a>
+        <a href="../register.html" class="btn-nav-primary" id="nav-start">라이더 무료 가입</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="메뉴 열기" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </nav>
+  </header>
+
+  <!-- Mobile nav -->
+  <nav class="nav-mobile" id="nav-mobile" aria-label="모바일 내비게이션">
+    <a href="../index.html" id="mnav-home">홈</a>
+    <a href="../pricing.html" id="mnav-pricing">요금제</a>
+    <a href="../register.html" id="mnav-register">회원가입</a>
+    <a href="../login.html" id="mnav-login" style="color:var(--gray-2)">로그인</a>
+    <a href="../register.html" class="btn-primary" id="mnav-start" style="margin-top:8px">라이더 무료 가입</a>
+  </nav>
+
+  <main>
+    <div class="container">
+      <!-- ========== HEADER ========== -->
+      <header class="page-header">
+        <span class="section-tag">긴급 요청 등록</span>
+        <h1>세트가 무너지기 전에,<br>용병을 부르세요</h1>
+        <p>인원 및 보수 조건을 등록하시면 실시간으로 검증된 숙련 용병 라이더들에게 정보가 제공됩니다.</p>
+      </header>
+
+      <!-- ========== FORM CARD ========== -->
+      <section class="form-card">
+        <form id="requestForm" novalidate>
+          
+          <div class="form-row">
+            <!-- 소속 플랫폼 -->
+            <div class="form-group" id="group-platform">
+              <label class="form-label" for="platform">소속 플랫폼<span>*</span></label>
+              <select class="form-select" id="platform" name="platform">
+                <option value="" disabled selected>선택해주세요</option>
+                <option value="쿠팡이츠 플러스">쿠팡이츠 플러스</option>
+                <option value="배민 플러스">배민 플러스</option>
+                <option value="기타">기타</option>
+              </select>
+              <span class="error-msg">소속 플랫폼을 선택해주세요.</span>
+            </div>
+
+            <!-- 출동 날짜 -->
+            <div class="form-group" id="group-date">
+              <label class="form-label" for="date">출동 날짜<span>*</span></label>
+              <input type="date" class="form-input" id="date" name="date" />
+              <span class="error-msg">출동 날짜를 선택해주세요.</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <!-- 필요 인원 -->
+            <div class="form-group" id="group-riders">
+              <label class="form-label" for="riders">필요 인원<span>*</span></label>
+              <input type="number" class="form-input" id="riders" name="riders" min="1" placeholder="예: 2" />
+              <span class="error-msg">필요 인원을 1명 이상 입력해주세요.</span>
+            </div>
+
+            <!-- 출동 시간 -->
+            <div class="form-group" id="group-time">
+              <label class="form-label">출동 시간<span>*</span></label>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <input type="time" class="form-input" id="startTime" name="startTime" style="flex: 1;" />
+                <span style="color: var(--gray-2);">~</span>
+                <input type="time" class="form-input" id="endTime" name="endTime" style="flex: 1;" />
+              </div>
+              <span class="error-msg">시작 시간과 종료 시간을 모두 입력해주세요.</span>
+            </div>
+          </div>
+
+          <!-- 활동 지역 -->
+          <div class="form-group full-width" id="group-areas">
+            <label class="form-label">활동 지역 (중복 선택 가능)<span>*</span></label>
+            <div class="area-chips" id="areaChipsContainer">
+              <!-- JS에서 동적으로 칩 생성 -->
+            </div>
+            <input type="hidden" id="selectedAreas" name="selectedAreas" />
+            <span class="error-msg" style="margin-top: 10px;">활동 지역을 최소 1곳 이상 선택해주세요.</span>
+          </div>
+
+          <div class="form-row">
+            <!-- 보수 방식 -->
+            <div class="form-group" id="group-payType">
+              <label class="form-label">보수 방식<span>*</span></label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="payType" value="일당" checked />
+                  일당
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="payType" value="건당" />
+                  건당
+                </label>
+              </div>
+            </div>
+
+            <!-- 보수 금액 -->
+            <div class="form-group" id="group-payAmount">
+              <label class="form-label" for="payAmount">보수 금액<span>*</span></label>
+              <div class="input-with-suffix">
+                <input type="number" class="form-input" id="payAmount" name="payAmount" min="0" placeholder="예: 150000" />
+                <span class="input-suffix">원</span>
+              </div>
+              <span class="price-help" id="priceHelp">
+                평균 15만원 ~ 20만원 수준으로 책정하면 매칭 확률이 높아집니다.
+              </span>
+              <span class="error-msg">올바른 보수 금액을 입력해주세요.</span>
+            </div>
+          </div>
+
+          <!-- 긴급도 -->
+          <div class="form-group full-width" id="group-urgency">
+            <label class="form-label">긴급도<span>*</span></label>
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="urgency" value="보통" checked />
+                보통
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="urgency" value="긴급" />
+                긴급
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="urgency" value="매우 긴급" />
+                🚨 매우 긴급
+              </label>
+            </div>
+          </div>
+
+          <!-- 추가 요청사항 -->
+          <div class="form-group full-width" id="group-memo">
+            <label class="form-label" for="memo">추가 요청사항</label>
+            <div class="textarea-container">
+              <textarea class="form-textarea" id="memo" name="memo" rows="4" maxlength="300" placeholder="상세 활동내용, 보유 필수 장비 등을 기재해주세요. (최대 300자)"></textarea>
+              <div class="text-counter"><span id="charCount">0</span>/300</div>
+            </div>
+          </div>
+
+          <!-- 제출 버튼 -->
+          <button type="submit" class="btn-primary full-width" style="width: 100%; margin-top: 12px; padding: 16px 28px;">
+            🚨 긴급 요청 등록하기
+          </button>
+
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <!-- ========== SUCCESS MODAL ========== -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-header">
+        <span class="modal-icon" aria-hidden="true">🚨</span>
+        <h2 class="modal-title" id="modalTitle">긴급 요청 등록 완료!</h2>
+      </div>
+      <div class="modal-body" id="modalSummary">
+        <!-- JS에서 요약 내역을 안전하게 렌더링 -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn-outline" id="btnModalClose">닫기</button>
+        <a href="../rider/requests.html" class="btn-primary" id="btnModalGo">라이더 목록에서 확인</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== FOOTER ========== -->
+  <footer id="footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <div class="nav-logo" style="margin-bottom:12px">
+            <span class="logo-dot" aria-hidden="true"></span>
+            용병
+          </div>
+          <p>플러스 지사의 세트 위기를 구하는<br>긴급 라이더 매칭 플랫폼</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4>서비스</h4>
+            <ul>
+              <li><a href="../index.html">홈</a></li>
+              <li><a href="../pricing.html">요금제</a></li>
+              <li><a href="../register.html">회원가입</a></li>
+              <li><a href="../login.html">로그인</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>라이더</h4>
+            <ul>
+              <li><a href="../register.html?type=rider">라이더 가입</a></li>
+              <li><a href="dashboard.html">대시보드</a></li>
+              <li><a href="../rider/requests.html">요청 목록</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h4>지사</h4>
+            <ul>
+              <li><a href="../register.html?type=agency">지사 가입</a></li>
+              <li><a href="dashboard.html">대시보드</a></li>
+              <li><a href="request-new.html">요청 등록</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 용병. All rights reserved.</p>
+        <div class="footer-bottom-links">
+          <a href="#">이용약관</a>
+          <a href="#">개인정보처리방침</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ==============================================
+    // CONFIG & CONSTANTS (맨 상단 임시값 분리)
+    // ==============================================
+    const CONFIG = {
+      PRESET_AREAS: [
+        "서울 강남", "서울 송파", "서울 마포", "서울 영등포", "서울 강서", "서울 노원",
+        "경기 수원", "경기 성남", "경기 고양", "인천 부평", "부산 해운대"
+      ],
+      HELP_TEXTS: {
+        "일당": "평균 15만원 ~ 20만원 수준으로 책정하면 매칭 확률이 높아집니다.",
+        "건당": "배달 건당 수수료 평균 4,000원 ~ 6,000원 수준을 추천합니다."
+      }
+    };
+
+    // ==============================================
+    // 🔒 SECURITY: XSS 방지용 escapeHtml
+    // ==============================================
+    function escapeHtml(str) {
+      if (!str) return '';
+      return str
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // ==============================================
+    // STORAGE WRAPPER: localStorage 예외 처리
+    // ==============================================
+    const Storage = {
+      get(key) {
+        try {
+          const item = localStorage.getItem(key);
+          return item ? JSON.parse(item) : null;
+        } catch (e) {
+          console.warn(`localStorage 읽기 실패 (key: ${key}):`, e);
+          return null;
+        }
+      },
+      set(key, value) {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+          return true;
+        } catch (e) {
+          console.warn(`localStorage 쓰기 실패 (key: ${key}):`, e);
+          return false;
+        }
+      }
+    };
+
+    // ==============================================
+    // DOM ELEMENTS
+    // ==============================================
+    const form = document.getElementById('requestForm');
+    const areaChipsContainer = document.getElementById('areaChipsContainer');
+    const selectedAreasInput = document.getElementById('selectedAreas');
+    const memoTextarea = document.getElementById('memo');
+    const charCountSpan = document.getElementById('charCount');
+    const priceHelpSpan = document.getElementById('priceHelp');
+    
+    const successModal = document.getElementById('successModal');
+    const modalSummary = document.getElementById('modalSummary');
+    const btnModalClose = document.getElementById('btnModalClose');
+
+    // NAV 모바일 토글
+    const toggle = document.getElementById('nav-toggle');
+    const mobileNav = document.getElementById('nav-mobile');
+    
+    toggle.addEventListener('click', () => {
+      const open = mobileNav.classList.toggle('open');
+      toggle.setAttribute('aria-expanded', open);
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+
+    mobileNav.querySelectorAll('a').forEach(a => {
+      a.addEventListener('click', () => {
+        mobileNav.classList.remove('open');
+        document.body.style.overflow = '';
+        toggle.setAttribute('aria-expanded', false);
+      });
+    });
+
+    // 스크롤 시 네비 배경 변경
+    const nav = document.getElementById('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.background = window.scrollY > 40
+        ? 'rgba(8,8,8,0.95)'
+        : 'rgba(8,8,8,0.75)';
+    });
+
+    // ==============================================
+    // CHIP SELECTION LOGIC
+    // ==============================================
+    const selectedAreas = new Set();
+
+    function renderAreaChips() {
+      areaChipsContainer.innerHTML = '';
+      CONFIG.PRESET_AREAS.forEach(area => {
+        const chip = document.createElement('button');
+        chip.type = 'button';
+        chip.className = 'area-chip';
+        chip.textContent = area;
+        
+        chip.addEventListener('click', () => {
+          if (selectedAreas.has(area)) {
+            selectedAreas.delete(area);
+            chip.classList.remove('selected');
+          } else {
+            selectedAreas.add(area);
+            chip.classList.add('selected');
+          }
+          updateSelectedAreasInput();
+        });
+
+        areaChipsContainer.appendChild(chip);
+      });
+    }
+
+    function updateSelectedAreasInput() {
+      const arr = Array.from(selectedAreas);
+      selectedAreasInput.value = arr.join(',');
+      
+      // 칩 에러 상태 해제 검증
+      const groupAreas = document.getElementById('group-areas');
+      if (arr.length > 0) {
+        groupAreas.classList.remove('has-error');
+      }
+    }
+
+    // ==============================================
+    // EVENT LISTENERS
+    // ==============================================
+
+    // 보수 방식 선택 라디오 변경 이벤트
+    document.querySelectorAll('input[name="payType"]').forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        const type = e.target.value;
+        priceHelpSpan.textContent = CONFIG.HELP_TEXTS[type] || '';
+      });
+    });
+
+    // 글자 수 카운터
+    memoTextarea.addEventListener('input', (e) => {
+      const len = e.target.value.length;
+      charCountSpan.textContent = len;
+    });
+
+    // ==============================================
+    // FORM VALIDATION & SUBMIT
+    // ==============================================
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      let isValid = true;
+      
+      const platformVal = document.getElementById('platform').value;
+      const dateVal = document.getElementById('date').value;
+      const ridersVal = parseInt(document.getElementById('riders').value, 10);
+      const startTimeVal = document.getElementById('startTime').value;
+      const endTimeVal = document.getElementById('endTime').value;
+      const payAmountVal = parseInt(document.getElementById('payAmount').value, 10);
+      const payTypeVal = document.querySelector('input[name="payType"]:checked').value;
+      const urgencyVal = document.querySelector('input[name="urgency"]:checked').value;
+      const memoVal = memoTextarea.value.trim();
+
+      // 1. 소속 플랫폼 검증
+      const groupPlatform = document.getElementById('group-platform');
+      if (!platformVal) {
+        groupPlatform.classList.add('has-error');
+        isValid = false;
+      } else {
+        groupPlatform.classList.remove('has-error');
+      }
+
+      // 2. 출동 날짜 검증
+      const groupDate = document.getElementById('group-date');
+      if (!dateVal) {
+        groupDate.classList.add('has-error');
+        isValid = false;
+      } else {
+        groupDate.classList.remove('has-error');
+      }
+
+      // 3. 필요 인원 검증
+      const groupRiders = document.getElementById('group-riders');
+      if (isNaN(ridersVal) || ridersVal < 1) {
+        groupRiders.classList.add('has-error');
+        isValid = false;
+      } else {
+        groupRiders.classList.remove('has-error');
+      }
+
+      // 4. 출동 시간 검증
+      const groupTime = document.getElementById('group-time');
+      if (!startTimeVal || !endTimeVal) {
+        groupTime.classList.add('has-error');
+        isValid = false;
+      } else {
+        groupTime.classList.remove('has-error');
+      }
+
+      // 5. 활동 지역 검증
+      const groupAreas = document.getElementById('group-areas');
+      if (selectedAreas.size === 0) {
+        groupAreas.classList.add('has-error');
+        isValid = false;
+      } else {
+        groupAreas.classList.remove('has-error');
+      }
+
+      // 6. 보수 금액 검증
+      const groupPayAmount = document.getElementById('group-payAmount');
+      if (isNaN(payAmountVal) || payAmountVal < 0) {
+        groupPayAmount.classList.add('has-error');
+        isValid = false;
+      } else {
+        groupPayAmount.classList.remove('has-error');
+      }
+
+      if (!isValid) {
+        // 첫 번째 에러 그룹으로 스크롤 이동
+        const firstError = document.querySelector('.form-group.has-error');
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return;
+      }
+
+      // 데이터 저장 객체
+      const newRequest = {
+        id: 'req_' + Date.now(),
+        platform: platformVal,
+        date: dateVal,
+        riders: ridersVal,
+        time: `${startTimeVal} ~ ${endTimeVal}`,
+        areas: Array.from(selectedAreas),
+        payType: payTypeVal,
+        payAmount: payAmountVal,
+        urgency: urgencyVal,
+        memo: memoVal,
+        createdAt: new Date().toISOString()
+      };
+
+      // 기존 데이터 불러와 맨 앞에 추가
+      const existing = Storage.get('yb_requests') || [];
+      existing.unshift(newRequest);
+      Storage.set('yb_requests', existing);
+
+      // 성공 모달 렌더링 및 노출
+      showSuccessModal(newRequest);
+    });
+
+    // ==============================================
+    // 🔒 SECURITY: escapeHtml을 사용한 안전한 요약 표시
+    // ==============================================
+    function showSuccessModal(req) {
+      const safePlatform = escapeHtml(req.platform);
+      const safeDate = escapeHtml(req.date);
+      const safeRiders = escapeHtml(String(req.riders));
+      const safeTime = escapeHtml(req.time);
+      const safeAreas = escapeHtml(req.areas.join(', '));
+      const safePayType = escapeHtml(req.payType);
+      const safePayAmount = escapeHtml(req.payAmount.toLocaleString('ko-KR'));
+      const safeUrgency = escapeHtml(req.urgency);
+
+      modalSummary.innerHTML = `
+        <div class="summary-item">
+          <span class="summary-label">플랫폼</span>
+          <span class="summary-val">${safePlatform}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">출동 정보</span>
+          <span class="summary-val">${safeDate} (${safeTime})</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">필요 인원</span>
+          <span class="summary-val">${safeRiders}명</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">활동 지역</span>
+          <span class="summary-val">${safeAreas}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">긴급도</span>
+          <span class="summary-val red-val">${safeUrgency}</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">확정 보수</span>
+          <span class="summary-val red-val">${safePayType} ${safePayAmount}원</span>
+        </div>
+      `;
+
+      successModal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    btnModalClose.addEventListener('click', () => {
+      successModal.classList.remove('open');
+      document.body.style.overflow = '';
+      form.reset();
+      selectedAreas.clear();
+      updateSelectedAreasInput();
+      renderAreaChips();
+      charCountSpan.textContent = '0';
+      priceHelpSpan.textContent = CONFIG.HELP_TEXTS["일당"];
+    });
+
+    // ==============================================
+    // INITIALIZATION
+    // ==============================================
+    renderAreaChips();
+    // 출동 날짜 기본값을 오늘 날짜로 세팅
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('date').min = today;
+  </script>
+</body>
+</html>
